@@ -60,6 +60,18 @@ class ContractTests(unittest.TestCase):
     def errors(self):
         return v.validate(self.root, self.m, self.r)[0]
 
+    def test_file_scope_contract_and_rendering(self):
+        self.m['file_reviews'] = [{'source_id': 's1', 'file_id': '8', 'name': 'reading.pdf', 'format': '.pdf',
+                                  'role': 'instructional_document', 'content_check_required': True,
+                                  'check_type': 'document_content', 'check_status': 'pending',
+                                  'reason': 'Required reading.', 'references': [{'source_id': 's1', 'instructor_only': False}]}]
+        self.assertEqual([], self.errors())
+        rendered = v.render(self.m, self.r, (self.root / 'narrative.md').read_text())
+        self.assertIn('File review checklist', rendered)
+        self.assertIn('reading.pdf / s1', rendered)
+        self.m['file_reviews'][0]['check_status'] = 'inspected'
+        self.assertIn('invalid file check status', self.errors())
+
     def test_valid_render_and_consistency(self):
         self.assertEqual([], self.errors())
         for filename, obj in [('manifest.json', self.m), ('review.json', self.r)]:

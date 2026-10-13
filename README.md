@@ -35,3 +35,5 @@ The unchanged source rubric and legacy instructions are retained in references/.
 The narrative covers every Moderate/Major finding with concrete next steps, prioritizes accessibility/compliance concerns, provides at least three next-term teaching tips, and closes with institutional support. It is a draft; creating it does not authorize sending it to faculty.
 
 Synthetic tests exercise the collector through actual SDK models and pagination, alongside validator tests and skill-package validation. A live Canvas pilot and substantive behavior evaluation remain to be performed. No course has been reviewed or changed by repository creation.
+
+The report retains the complete file inventory, but scopes content review to instructional documents such as DOCX, PDF, PPTX, and spreadsheets. Images/media receive contextual accessibility checks; unused assets remain listed with an exclusion reason. Unlinked documents and instructor references receive a scope check before content inspection.

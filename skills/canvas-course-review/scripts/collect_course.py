@@ -12,6 +12,11 @@ from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import parse_qsl, urlencode, urljoin, urlsplit, urlunsplit
 
+# Works both as a portable CLI and when loaded by fixture tests.
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from file_scope import classify_files
+
 # Select design fields, never serialize SDK internals, enrollments, replies, or grades.
 FIELDS = {
     'course': 'id name course_code syllabus_body default_view workflow_state start_at end_at time_zone public_description restrict_enrollments_to_course_dates blueprint',
@@ -80,6 +85,7 @@ class Collector:
         self.root.mkdir(parents=True, exist_ok=False)
         (self.root / 'source').mkdir()
         self.sources, self.inventory, self.errors, self.browser_checks = [], [], [], []
+        self.file_reviews = []
         self.objects, self.counts = {}, {}
         self.started = datetime.now(timezone.utc).isoformat()
         self.name = f'Course {course_id} (identity unavailable)'
@@ -109,7 +115,8 @@ class Collector:
                     'mode': self.mode, 'scope': 'Course-wide instructor/API design snapshot, including accessible drafts and unlinked content; published_view requires browser scope resolution.',
                     'snapshot_at': self.started, 'rubric_version': 'CUOCDR v0.9',
                     'sources': self.sources, 'inventory': self.inventory, 'limitations': limitations,
-                    'collection': {'status': status, 'counts': self.counts, 'errors': self.errors}}
+                    'collection': {'status': status, 'counts': self.counts, 'errors': self.errors},
+                    'file_reviews': self.file_reviews}
         self.write_json('manifest.json', manifest)
         self.write_json('collection.json', {'status': status, 'counts': self.counts, 'errors': self.errors,
                                            'started_at': self.started, 'updated_at': datetime.now(timezone.utc).isoformat()})
@@ -260,6 +267,7 @@ class Collector:
         ]
         for spec in specs:
             self.detail_collection(course, *spec)
+        self.file_reviews = classify_files(self.objects, self.browser_checks, self.base_url, self.course_id)
         self.write_readable()
         return self.checkpoint(final=True)
 

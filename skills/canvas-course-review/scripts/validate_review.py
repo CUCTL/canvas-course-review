@@ -84,6 +84,13 @@ def render(manifest, review, narrative):
     lines += [f"- {key}: {value}" for key, value in review['stages'].items()]
     lines += ['', '## Source register', '']
     lines += [f"- {s['id']}: {s['location']} — {s['description']}" for s in manifest['sources']]
+    if manifest.get('file_reviews'):
+        lines += ['', '## File review checklist', '',
+                  '| File / source | Format | Role | Content check | Status | Reason |',
+                  '| --- | --- | --- | --- | --- | --- |']
+        for f in manifest['file_reviews']:
+            lines.append('| ' + ' | '.join(cell(v) for v in (f['name'] + ' / ' + f['source_id'], f['format'], f['role'],
+                         'Required' if f['content_check_required'] else f['check_type'], f['check_status'], f['reason'])) + ' |')
     lines += ['', '## Coverage inventory', '']
     lines += [f"- {i['id']}: {i['location']} — {i['status']}; view: {i['view']}; publication: {i['publication_state']}. {i.get('reason', '')}" for i in manifest['inventory']]
     return '\n'.join(lines) + '\n'
@@ -131,6 +138,25 @@ def validate(root, m, r):
             check(bool(i.get('source_ids')) and set(i.get('source_ids', [])) <= source_ids, 'inventory source references missing/unresolved')
         else:
             check(nonempty(i.get('reason')), 'blocked/excluded inventory needs reason')
+    file_ids = set()
+    check(isinstance(m.get('file_reviews', []), list), 'file_reviews must be an array')
+    for f in m.get('file_reviews', []) if isinstance(m.get('file_reviews', []), list) else []:
+        if not isinstance(f, dict):
+            errors.append('invalid file review record')
+            continue
+        check(all(nonempty(f.get(k)) for k in ('source_id', 'file_id', 'name', 'format', 'reason')), 'invalid file review record')
+        check(f.get('source_id') in source_ids, 'unresolved file review source')
+        check(f.get('file_id') not in file_ids, 'duplicate file review')
+        file_ids.add(f.get('file_id'))
+        check(type(f.get('content_check_required')) is bool, 'file content_check_required must be boolean')
+        check(f.get('role') in {'instructional_document', 'linked_instructional_resource', 'contextual_image_or_media',
+                              'instructor_reference', 'unlinked_document_candidate', 'unreferenced_asset'}, 'invalid file role')
+        check(f.get('check_type') in {'document_content', 'resource_content', 'contextual_accessibility', 'scope_confirmation', 'inventory_only'}, 'invalid file check type')
+        check(f.get('check_status') in {'pending', 'verified', 'blocked', 'excluded'}, 'invalid file check status')
+        references = f.get('references')
+        check(isinstance(references, list), 'file references must be an array')
+        if isinstance(references, list):
+            check(all(isinstance(x, dict) and x.get('source_id') in source_ids and type(x.get('instructor_only')) is bool for x in references), 'invalid file reference')
     check(r.get('status') in {'completed', 'partial', 'failed'}, 'invalid report status')
     stages = r.get('stages', {})
     check(set(stages) == {'design', 'grammar', 'narrative'} and all(v in OUTCOMES for v in stages.values()), 'invalid stage outcomes')
