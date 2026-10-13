@@ -68,20 +68,40 @@ def render(manifest, review, narrative):
                 lines.append(f'| {cid} | {wording} | Unreviewed | Review failed before evaluation. | Resume review. |')
                 continue
             label = c['rating'] or ('Deferred' if c['deferred'] else 'Pending verification')
-            evidence = f"{c['evidence']} (status: {c['evidence_status']}; sources: {', '.join(c['source_ids'])})"
+            evidence = f"{c['evidence']} [Evidence](evidence-register.md#criterion-{cid})"
             action = c['action_plan'] or c['verification_step'] or '—'
             if c['uncertainty']:
                 action += f" Uncertainty: {c['uncertainty']}"
             lines.append('| ' + ' | '.join(cell(v) for v in (cid, wording, label, evidence, action)) + ' |')
-    lines += ['', '## Priority actions', '']
-    lines += [f"- CU {c['id']} ({c['rating']}): {c['action_plan']}" for c in review['criteria'] if c['rating'] in PRIORITIES] or ['No Moderate/Major findings recorded; consult status and limitations.']
+    lines += ['', '## Revision checklist', '']
+    revisions = [c for c in review['criteria'] if c['rating'] in PRIORITIES | {'Minor Revision'}]
+    accessibility_compliance = {1, 7, 8, 11, 14, 15, 16, 17, 18, 19, 20, 21, 22, 27}
+    severity = {'Major Revision': 0, 'Moderate Revision': 1, 'Minor Revision': 2}
+    revisions.sort(key=lambda c: (c['id'] not in accessibility_compliance, severity[c['rating']], c['id']))
+    lines += [f"- CU {c['id']} ({c['rating']}): {c['action_plan']}" for c in revisions] or ['No revision findings recorded; consult status and limitations.']
     lines += ['', '## Mechanical grammar and spelling', '']
-    lines += [f"- Source {g['source_id']}: {g['issue']} Suggested fix: {g['suggested_fix']}" for g in review['grammar']] or [
+    lines += [f"- {g['issue']} Suggested fix: {g['suggested_fix']} [Evidence register](evidence-register.md)" for g in review['grammar']] or [
         'No confirmed mechanical issues found.' if review['stages']['grammar'] == 'completed' else 'Mechanical review incomplete; see limitations.']
     lines += ['', '## Scope and limitations', '', f"Scope: {manifest['scope']}", '']
     lines += [f'- {item}' for item in manifest['limitations'] + review['limitations']] or ['No recorded limitations.']
     lines += ['', '## Stage outcomes', '']
     lines += [f"- {key}: {value}" for key, value in review['stages'].items()]
+    lines += ['', 'Detailed sources, criterion evidence mappings, and verification coverage are saved in the separate [evidence register](evidence-register.md).']
+    return '\n'.join(lines) + '\n'
+
+
+def render_evidence(manifest, review, checks=None):
+    """Reviewer appendix; full machine provenance stays in manifest.json."""
+    lines = [f"# {manifest['course']['name']} — Evidence register", '',
+             f"Snapshot: {manifest['snapshot_at']}", '',
+             'Supporting evidence for [the faculty report](review.md). Source retrieval marked inspected does not itself verify content, accessibility, or learner access. Excluded files remain only in internal JSON artifacts.',
+             '', '## Criterion evidence map', '']
+    for c in review['criteria']:
+        lines += [f"### Criterion {c['id']}", '',
+                  f"Rating: {c['rating'] or ('Deferred' if c['deferred'] else 'Pending verification')}; evidence state: {c['evidence_status']}.",
+                  f"Sources: {', '.join(c['source_ids'])}", '', c['evidence']]
+    lines += ['', '## Grammar evidence map', '']
+    lines += [f"- {g['source_id']}: {g['issue']} — {g['suggested_fix']}" for g in review['grammar']] or ['No recorded mechanical findings.']
     # Preserve full provenance internally; omit excluded files from every report listing.
     excluded_files = {f['source_id'] for f in manifest.get('file_reviews', []) if f['check_status'] == 'excluded'}
     excluded_files.update(i['id'] for i in manifest['inventory'] if i['status'] == 'excluded' and i['id'].startswith('file-'))
@@ -100,6 +120,13 @@ def render(manifest, review, narrative):
     lines += ['', '## Coverage inventory', '']
     lines += [f"- {i['id']}: {i['location']} — {i['status']}; view: {i['view']}; publication: {i['publication_state']}. {i.get('reason', '')}" for i in manifest['inventory']
               if not excluded_source(i['id']) and not any(excluded_source(sid) for sid in i.get('source_ids', []))]
+    if checks is not None:
+        lines += ['', '## Verification dispositions', '',
+                  'Verified means the recorded scope has evidence; blocked means an attempted check could not resolve that scope; excluded means outside scope or consolidated elsewhere. None implies universal accessibility.', '']
+        for c in checks.get('checks', []):
+            if excluded_source(c.get('file_source_id', c['id'])):
+                continue
+            lines.append(f"- {c['id']}: {c['status']}; method: {c.get('verification_method', c.get('preferred_method', 'unspecified'))}; {c.get('verification_scope', c.get('scope_reason', c.get('reason', '')))} Sources: {', '.join(c.get('source_ids', []))}")
     return '\n'.join(lines) + '\n'
 
 
@@ -243,10 +270,14 @@ def main():
         errors, narrative, count, coverage = validate(root, m, r)
         if not errors:
             report = render(m, r, narrative)
-            if args.render:
-                (root / 'review.md').write_text(report)
-            elif local_file(root, 'review.md').read_text() != report:
-                errors.append('review.md differs from validated rendering; rerun --render')
+            queue_path = root / 'browser-checks.json'
+            checks = json.loads(local_file(root, 'browser-checks.json').read_text()) if queue_path.exists() else None
+            evidence = render_evidence(m, r, checks)
+            for filename, content in [('review.md', report), ('evidence-register.md', evidence)]:
+                if args.render:
+                    (root / filename).write_text(content)
+                elif local_file(root, filename).read_text() != content:
+                    errors.append(f'{filename} differs from validated rendering; rerun --render')
     except (OSError, ValueError, KeyError, TypeError, AttributeError) as e:
         errors = [f'invalid input: {e}']
     result = {'valid': not errors, 'errors': errors, 'narrative_word_count': count, 'narrative_coverage': coverage}

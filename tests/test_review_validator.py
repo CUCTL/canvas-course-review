@@ -66,7 +66,7 @@ class ContractTests(unittest.TestCase):
                                   'check_type': 'document_content', 'check_status': 'pending',
                                   'reason': 'Required reading.', 'references': [{'source_id': 's1', 'instructor_only': False}]}]
         self.assertEqual([], self.errors())
-        rendered = v.render(self.m, self.r, (self.root / 'narrative.md').read_text())
+        rendered = v.render_evidence(self.m, self.r)
         self.assertIn('File review checklist', rendered)
         self.assertIn('reading.pdf / s1', rendered)
         self.m['file_reviews'][0]['check_status'] = 'inspected'
@@ -81,14 +81,14 @@ class ContractTests(unittest.TestCase):
                                   'check_status': 'excluded', 'reason': 'No instructional reference.', 'references': []}]
         self.assertEqual([], self.errors())
         before = copy.deepcopy(self.m)
-        report = v.render(self.m, self.r, (self.root / 'narrative.md').read_text())
+        report = v.render_evidence(self.m, self.r)
         self.assertNotIn('unused-banner.png', report)
         self.assertNotIn('file-9', report)
         self.assertNotIn('File review checklist', report)
         self.assertIn('s1: source.html', report)
         self.assertEqual(before, self.m)
         self.m['file_reviews'][0]['check_status'] = 'pending'
-        report = v.render(self.m, self.r, (self.root / 'narrative.md').read_text())
+        report = v.render_evidence(self.m, self.r)
         self.assertIn('unused-banner.png', report)
 
     def test_valid_render_and_consistency(self):
@@ -100,6 +100,15 @@ class ContractTests(unittest.TestCase):
         self.assertEqual(0, run('--render').returncode)
         report = (self.root / 'review.md').read_text()
         self.assertIn('Faculty-facing narrative draft', report)
+        self.assertNotIn('## Source register', report)
+        self.assertNotIn('## Coverage inventory', report)
+        self.assertNotIn('sources: s1', report)
+        appendix = (self.root / 'evidence-register.md').read_text()
+        self.assertIn('s1: source.html', appendix)
+        self.assertIn('### Criterion 21', appendix)
+        checklist = report.split('## Revision checklist')[1].split('## Mechanical grammar')[0]
+        self.assertIn('CU 21 (Major Revision)', checklist)
+        self.assertNotIn('CU 1 (Present)', checklist)
         self.assertLess(report.index('Review note:'), report.index('## Faculty-facing narrative draft'))
         self.assertLess(report.index('## Faculty-facing narrative draft'), report.index('## 1. COURSE INFORMATION'))
         self.assertLess(report.index('## Mechanical grammar and spelling'), report.index('## Scope and limitations'))
@@ -108,6 +117,30 @@ class ContractTests(unittest.TestCase):
         self.assertEqual(0, run().returncode)
         (self.root / 'review.md').write_text(report + 'tampered')
         self.assertNotEqual(0, run().returncode)
+
+    def test_revision_checklist_prioritizes_accessibility_and_omits_passes(self):
+        for cid, rating in [(20, 'Major Revision'), (12, 'Moderate Revision'), (17, 'Minor Revision')]:
+            c = next(x for x in self.r['criteria'] if x['id'] == cid)
+            c.update(rating=rating, action_plan=f'Repair criterion {cid}.')
+        report = v.render(self.m, self.r, (self.root / 'narrative.md').read_text())
+        checklist = report.split('## Revision checklist')[1].split('## Mechanical grammar')[0]
+        self.assertLess(checklist.index('CU 20'), checklist.index('CU 17'))
+        self.assertLess(checklist.index('CU 17'), checklist.index('CU 12'))
+        self.assertNotIn('CU 1 (Present)', checklist)
+        appendix = v.render_evidence(self.m, self.r, {'checks': [{'id': 'q1', 'status': 'blocked',
+                    'verification_method': 'browser', 'verification_scope': 'Provider access restricted.', 'source_ids': ['s1']}]})
+        self.assertIn('q1: blocked; method: browser', appendix)
+        self.assertIn('Provider access restricted.', appendix)
+
+    def test_evidence_register_consistency_is_checked(self):
+        for filename, obj in [('manifest.json', self.m), ('review.json', self.r)]:
+            (self.root / filename).write_text(json.dumps(obj))
+        command = [sys.executable, str(SCRIPT), str(self.root)]
+        self.assertEqual(0, subprocess.run(command + ['--render'], capture_output=True).returncode)
+        (self.root / 'evidence-register.md').write_text('Altered supporting evidence')
+        result = subprocess.run(command, capture_output=True, text=True)
+        self.assertNotEqual(0, result.returncode)
+        self.assertIn('evidence-register.md differs', (self.root / 'validation.json').read_text())
 
     def test_missing_duplicate_or_invented_criterion(self):
         original = copy.deepcopy(self.r)
