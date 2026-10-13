@@ -1,6 +1,6 @@
 # Review policy
 
-Version 1.3, October 13, 2026. CUOCDR v0.9 is the rating authority. The preserved rubric has 42 items numbered 1–24 and 26–43; do not add item 25. Preserve category order and criterion wording.
+Version 1.4, October 13, 2026. CUOCDR v0.9 is the rating authority. The preserved rubric has 42 items numbered 1–24 and 26–43; do not add item 25. Preserve category order and criterion wording.
 
 ## Ratings and evidence
 
@@ -36,7 +36,7 @@ For level 3, before presenting a new review, obtain a separate agent’s blind a
 
 ## Review levels
 
-Offer three levels when the user has not selected one: API content + narrative (1), API content + necessary browser verification + narrative (2; recommended default), and API content + necessary browser verification + blind assessment + narrative (3). The rubric, design-only boundary, grammar pass, narrative checklist, and report format apply to all levels. Level 1 cannot establish browser-dependent behavior; leave those conclusions unverified, with explicit limits and next steps. Levels 1–2 do not require independent confirmation. All levels require a primary consistency check and validation. Level 3 requires blind assessment, reconciliation, and the final policy audit. See [review levels](review-levels.md). Do not infer a deficiency from a check intentionally outside the selected level, or silently downgrade unfinished level-3 confirmation.
+Offer three levels when the user has not selected one: API content + narrative (1), API content + necessary browser verification + narrative (2; recommended), and API content + necessary browser verification + blind assessment + narrative (3). Wait for an explicit user selection before course collection or review; silence and a preselected option do not select a level. The rubric, design-only boundary, grammar pass, narrative checklist, and report format apply to all levels. Level 1 cannot establish browser-dependent behavior; leave those conclusions unverified, with explicit limits and next steps. Levels 1–2 do not require independent confirmation. All levels require a primary consistency check and validation. Level 3 requires blind assessment, reconciliation, and the final policy audit. See [review levels](review-levels.md). Do not infer a deficiency from a check intentionally outside the selected level, or silently downgrade unfinished level-3 confirmation.
 
 ## Design-only boundary
 

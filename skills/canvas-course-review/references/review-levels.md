@@ -1,12 +1,12 @@
 # Review levels
 
-Select the level once per run, separately from pre-launch/published/export scope. Honor an explicit level or a clear request for its included work. An explicit blind-confirmation request selects level 3. Otherwise offer a concise question with these choices, placing the recommended default first:
+Select the level once per run, separately from pre-launch/published/export scope. Honor an explicit level or a clear request for its included work. An explicit blind-confirmation request selects level 3. Otherwise offer a concise question with these choices, placing the recommended option first:
 
 - **2 — API + necessary browser verification + narrative (Recommended)**
 - **1 — API content + narrative**
 - **3 — API + necessary browser verification + blind assessment + narrative**
 
-Explain that level 1 is faster and leaves interface/resource behavior unverified; level 2 adds targeted browser evidence; level 3 adds an independent policy/evidence assessment. Do not promise fixed token, credit, or time savings without measured usage. Allow a reasonable reply window (about 60 seconds for an async question), doing only independent setup/API collection in the meantime. If no answer arrives, announce use of level 2 and record selection as default. Explicit answers are user_selected. Do not treat UI preselection as a submitted choice or ask again when the choice is already known.
+Explain that level 1 is faster and leaves interface/resource behavior unverified; level 2 adds targeted browser evidence; level 3 adds an independent policy/evidence assessment. Do not promise fixed token, credit, or time savings without measured usage. Wait for the user to explicitly select a level before starting course collection or review work. If no answer arrives, leave the question pending; do not apply a timeout fallback, automatically select level 2, or announce that it will be used. Record explicit selections as user_selected. Do not treat UI preselection as a submitted choice or ask again when the choice is already known.
 
 ## Shared work
 
@@ -18,7 +18,7 @@ Use supported read-only canvasapi methods, raw HTML/settings, and downloaded ins
 
 Disposition browser-only execution candidates as excluded with a selected-level reason, preserving the unanswered question and linked criterion. Keep them visible in the evidence register unless they concern an independently excluded file; do not hide unresolved criterion limits by clearing the queue. The faculty report states that browser verification and independent confirmation were outside the selected scope. Completed means this scoped review is done, not that all accessibility/resource behavior is certified.
 
-## 2 — API + browser (`api_browser`; default)
+## 2 — API + browser (`api_browser`; recommended)
 
 Perform level 1's substantive review, then resolve evidence gaps through API/local checks first and targeted authenticated browser verification only when needed. Work through in-scope candidates as verified, excluded with a reason, or blocked after an attempted path with a limit and next step. Do not navigate every source or repeat checks answered by the API. No independent confirmation agent is required. State that independent assessment was outside scope; do not call this a blind-confirmed review.
 
