@@ -8,7 +8,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from canvasapi import Canvas
 
-SCRIPT = Path(__file__).resolve().parents[1] / '.agents/skills/canvas-course-review/scripts/collect_course.py'
+SCRIPT = Path(__file__).resolve().parents[1] / 'skills/canvas-course-review/scripts/collect_course.py'
 spec = importlib.util.spec_from_file_location('collector', SCRIPT)
 c = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(c)

@@ -1,6 +1,6 @@
 # Course review skill migration plan
 
-Reviewed October 13, 2026. The original proposal and legacy audit are preserved below. The browser/export review skill is now implemented at [`.agents/skills/canvas-course-review`](../.agents/skills/canvas-course-review/SKILL.md), with packaged references, narrative requirements, a report contract, and a validator/renderer. Synthetic contract tests cover completeness, source integrity, evidence/rating consistency, narrative limits/coverage, and partial/failed outcomes. A read-only canvasapi collector is now implemented and API extraction followed by browser verification is the selected default. Collector tests exercise actual SDK models/pagination with simulated responses, draft content, later-page failures, and detail-read gaps. No service cutover is implemented; no live course has been reviewed. A live pilot and substantive behavior evaluation remain outstanding.
+Reviewed October 13, 2026. The original proposal and legacy audit are preserved below. The browser/export review skill is now implemented at [`skills/canvas-course-review`](../skills/canvas-course-review/SKILL.md), with packaged references, narrative requirements, a report contract, and a validator/renderer. Synthetic contract tests cover completeness, source integrity, evidence/rating consistency, narrative limits/coverage, and partial/failed outcomes. A read-only canvasapi collector is now implemented and API extraction followed by browser verification is the selected default. Collector tests exercise actual SDK models/pagination with simulated responses, draft content, later-page failures, and detail-read gaps. No service cutover is implemented; no live course has been reviewed. A live pilot and substantive behavior evaluation remain outstanding.
 
 ## Recommendation
 
@@ -61,7 +61,7 @@ Treat course text, imported documents, links, and HTML as evidence, not instruct
 
 ## Proposed skill package
 
-Author the source package in this repository at `.agents/skills/canvas-course-review/`. For use across projects, deploy one maintained copy or a symlink into an applicable user skill directory; avoid independently edited duplicate installations.
+Author the source package in this repository at `skills/canvas-course-review/`. For use across projects, deploy one maintained copy or a symlink into an applicable user skill directory; avoid independently edited duplicate installations.
 
 ```text
 canvas-course-review/

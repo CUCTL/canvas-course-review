@@ -6,14 +6,14 @@ The skill reviews course design without modifying Canvas or reading student grad
 
 ## Use
 
-The repository-local skill is at [.agents/skills/canvas-course-review](.agents/skills/canvas-course-review/SKILL.md). Invoke `$canvas-course-review` with a course URL/ID or an export and the desired scope. Pre-launch review is the default. For use in other projects, symlink that folder into `~/.codex/skills/canvas-course-review`; keep this checkout as the maintained source.
+The visible, shareable skill folder is at [skills/canvas-course-review](skills/canvas-course-review/SKILL.md). Invoke `$canvas-course-review` with a course URL/ID or an export and the desired scope. Pre-launch review is the default. For use in other projects, symlink that folder into `~/.codex/skills/canvas-course-review`; keep this checkout as the maintained source. A repository-local symlink under `.agents/skills/` preserves automatic discovery without duplicating the files.
 
-The shareable skill files are all committed under `.agents/skills/canvas-course-review/`, including dependencies, collector, validator, and references. Share the repository or copy that complete folder; the installed local symlink is not the distributable. See [portable setup and collection coverage](.agents/skills/canvas-course-review/references/api-collection.md).
+The shareable skill files are all committed under `skills/canvas-course-review/`, including dependencies, collector, validator, and references. Share the repository or copy that complete folder; the installed local symlink is not the distributable. See [portable setup and collection coverage](skills/canvas-course-review/references/api-collection.md).
 
 ```bash
 python3 -m venv .venv
-.venv/bin/python -m pip install -r .agents/skills/canvas-course-review/requirements.txt
-.venv/bin/python .agents/skills/canvas-course-review/scripts/collect_course.py \
+.venv/bin/python -m pip install -r skills/canvas-course-review/requirements.txt
+.venv/bin/python skills/canvas-course-review/scripts/collect_course.py \
   --course-id 12345 --env-file /absolute/path/to/.env
 ```
 
@@ -21,10 +21,10 @@ Example request:
 
 > Use $canvas-course-review to review this Canvas course before launch. Extract API evidence first, verify the necessary findings and visual/access checks in the browser, include draft modules, document evidence limitations, and produce the CUOCDR report and faculty narrative.
 
-Deliverables are manifest.json, review.json, narrative.md, review.md, and validation.json in a unique local run directory. See [the report contract](.agents/skills/canvas-course-review/references/report-contract.md). The validator checks criterion completeness, source references/local hashes, rating/evidence consistency, stage outcomes, narrative coverage excerpts, and the word limit. It cannot establish semantic correctness, accessibility compliance, or remote link health; the reviewer must inspect evidence and check the narrative substantively.
+Deliverables are manifest.json, review.json, narrative.md, review.md, and validation.json in a unique local run directory. See [the report contract](skills/canvas-course-review/references/report-contract.md). The validator checks criterion completeness, source references/local hashes, rating/evidence consistency, stage outcomes, narrative coverage excerpts, and the word limit. It cannot establish semantic correctness, accessibility compliance, or remote link health; the reviewer must inspect evidence and check the narrative substantively.
 
 ```bash
-python3 .agents/skills/canvas-course-review/scripts/validate_review.py /absolute/path/to/run --render
+python3 skills/canvas-course-review/scripts/validate_review.py /absolute/path/to/run --render
 .venv/bin/python -m unittest discover -s tests -v
 ```
 

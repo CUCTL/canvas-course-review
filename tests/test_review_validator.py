@@ -9,7 +9,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-SCRIPT = Path(__file__).resolve().parents[1] / '.agents/skills/canvas-course-review/scripts/validate_review.py'
+SCRIPT = Path(__file__).resolve().parents[1] / 'skills/canvas-course-review/scripts/validate_review.py'
 spec = importlib.util.spec_from_file_location('validator', SCRIPT)
 v = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(v)
