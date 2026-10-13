@@ -72,6 +72,25 @@ class ContractTests(unittest.TestCase):
         self.m['file_reviews'][0]['check_status'] = 'inspected'
         self.assertIn('invalid file check status', self.errors())
 
+    def test_excluded_files_hidden_from_all_report_listings(self):
+        self.m['sources'].append({'id': 'file-9', 'location': 'unused-banner.png', 'description': 'File metadata'})
+        self.m['inventory'].append({'id': 'file-9', 'location': 'unused-banner.png', 'view': 'API metadata',
+                                    'publication_state': 'unknown', 'status': 'inspected', 'source_ids': ['file-9']})
+        self.m['file_reviews'] = [{'source_id': 'file-9', 'file_id': '9', 'name': 'unused-banner.png', 'format': '.png',
+                                  'role': 'unreferenced_asset', 'content_check_required': False, 'check_type': 'inventory_only',
+                                  'check_status': 'excluded', 'reason': 'No instructional reference.', 'references': []}]
+        self.assertEqual([], self.errors())
+        before = copy.deepcopy(self.m)
+        report = v.render(self.m, self.r, (self.root / 'narrative.md').read_text())
+        self.assertNotIn('unused-banner.png', report)
+        self.assertNotIn('file-9', report)
+        self.assertNotIn('File review checklist', report)
+        self.assertIn('s1: source.html', report)
+        self.assertEqual(before, self.m)
+        self.m['file_reviews'][0]['check_status'] = 'pending'
+        report = v.render(self.m, self.r, (self.root / 'narrative.md').read_text())
+        self.assertIn('unused-banner.png', report)
+
     def test_valid_render_and_consistency(self):
         self.assertEqual([], self.errors())
         for filename, obj in [('manifest.json', self.m), ('review.json', self.r)]:

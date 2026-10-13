@@ -82,17 +82,24 @@ def render(manifest, review, narrative):
     lines += [f'- {item}' for item in manifest['limitations'] + review['limitations']] or ['No recorded limitations.']
     lines += ['', '## Stage outcomes', '']
     lines += [f"- {key}: {value}" for key, value in review['stages'].items()]
+    # Preserve full provenance internally; omit excluded files from every report listing.
+    excluded_files = {f['source_id'] for f in manifest.get('file_reviews', []) if f['check_status'] == 'excluded'}
+    excluded_files.update(i['id'] for i in manifest['inventory'] if i['status'] == 'excluded' and i['id'].startswith('file-'))
+    def excluded_source(source_id):
+        return any(source_id == key or source_id.startswith(key + '-') for key in excluded_files)
     lines += ['', '## Source register', '']
-    lines += [f"- {s['id']}: {s['location']} — {s['description']}" for s in manifest['sources']]
-    if manifest.get('file_reviews'):
+    lines += [f"- {s['id']}: {s['location']} — {s['description']}" for s in manifest['sources'] if not excluded_source(s['id'])]
+    visible_files = [f for f in manifest.get('file_reviews', []) if not excluded_source(f['source_id'])]
+    if visible_files:
         lines += ['', '## File review checklist', '',
                   '| File / source | Format | Role | Content check | Status | Reason |',
                   '| --- | --- | --- | --- | --- | --- |']
-        for f in manifest['file_reviews']:
+        for f in visible_files:
             lines.append('| ' + ' | '.join(cell(v) for v in (f['name'] + ' / ' + f['source_id'], f['format'], f['role'],
                          'Required' if f['content_check_required'] else f['check_type'], f['check_status'], f['reason'])) + ' |')
     lines += ['', '## Coverage inventory', '']
-    lines += [f"- {i['id']}: {i['location']} — {i['status']}; view: {i['view']}; publication: {i['publication_state']}. {i.get('reason', '')}" for i in manifest['inventory']]
+    lines += [f"- {i['id']}: {i['location']} — {i['status']}; view: {i['view']}; publication: {i['publication_state']}. {i.get('reason', '')}" for i in manifest['inventory']
+              if not excluded_source(i['id']) and not any(excluded_source(sid) for sid in i.get('source_ids', []))]
     return '\n'.join(lines) + '\n'
 
 
