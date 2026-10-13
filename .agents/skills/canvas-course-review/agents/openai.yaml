@@ -1,0 +1,4 @@
+interface:
+  display_name: "Canvas Course Review"
+  short_description: "CUOCDR review with faculty narrative feedback"
+  default_prompt: "Use $canvas-course-review to review this Canvas course against CUOCDR and draft faculty-facing narrative feedback."
