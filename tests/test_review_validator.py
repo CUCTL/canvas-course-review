@@ -142,6 +142,26 @@ class ContractTests(unittest.TestCase):
         self.assertNotEqual(0, result.returncode)
         self.assertIn('evidence-register.md differs', (self.root / 'validation.json').read_text())
 
+    def test_confirmation_cannot_claim_blind_completion_without_artifacts(self):
+        self.r['confirmation'] = {'status': 'reconciled', 'blind': False, 'limitations': [],
+                                  'input_index': 'confirmation/input-index.json',
+                                  'independent_assessment': 'confirmation/independent.json',
+                                  'reconciliation': 'confirmation/reconciliation.md',
+                                  'policy_audit': 'confirmation/policy-audit.md'}
+        self.assertTrue(self.errors())
+        folder = self.root / 'confirmation'
+        folder.mkdir()
+        for filename in ('input-index.json', 'independent.json', 'reconciliation.md', 'policy-audit.md'):
+            (folder / filename).write_text('Saved assessment evidence')
+        self.r['confirmation']['blind'] = True
+        self.assertEqual([], self.errors())
+        report = v.render(self.m, self.r, (self.root / 'narrative.md').read_text())
+        self.assertIn('Independent blind assessment completed', report)
+        self.r['confirmation'].update(status='unavailable', blind=False, limitations=['Reviewer unavailable.'])
+        self.assertIn('completed report has incomplete independent confirmation', self.errors())
+        report = v.render(self.m, self.r, (self.root / 'narrative.md').read_text())
+        self.assertNotIn('Independent blind assessment completed', report)
+
     def test_missing_duplicate_or_invented_criterion(self):
         original = copy.deepcopy(self.r)
         for mutation in ('missing', 'duplicate', 'invented'):

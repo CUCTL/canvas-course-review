@@ -1,6 +1,6 @@
 # Review policy
 
-Version 1.0, October 13, 2026. CUOCDR v0.9 is the rating authority. The preserved rubric has 42 items numbered 1–24 and 26–43; do not add item 25. Preserve category order and criterion wording.
+Version 1.1, October 13, 2026. CUOCDR v0.9 is the rating authority. The preserved rubric has 42 items numbered 1–24 and 26–43; do not add item 25. Preserve category order and criterion wording.
 
 ## Ratings and evidence
 
@@ -29,3 +29,7 @@ Recommend hiding navigation only when unused status is established or the instru
 Text rating labels are authoritative; do not rely on color/icons. Review tables contain ID, criterion, rating, evidence, and action/verification. Show scope, snapshot, rubric version, source references, coverage limitations, deferred fields, priority actions, and mechanical grammar separately. Write the narrative after findings are finalized, then display it immediately after the course identity/date/mode/status and brief limitations note, before the rubric tables. Put full scope/limitations and stage outcomes after the tables and grammar findings. Keep the detailed source register, mappings, file checklist and inventory in a separate evidence register linked from the main report; suggestions must not become new unsupported deficiencies.
 
 Report-generation status is separate from course quality. completed means all report stages were performed, even if technical/policy verification remains pending and is explicitly disclosed. partial means scope or a report stage remains unfinished. failed means no usable review was produced. Never turn failure text or missing stages into a clean success.
+
+## Independent confirmation
+
+Before presenting a new review, obtain a separate agent’s blind assessment of the same saved raw evidence and controlling policy. Freeze both assessments before comparison; reconcile against evidence rather than averaging. Then audit the final report and narrative for consistency, documenting that comparison is no longer blind. Reuse existing browser evidence unless a concrete gap requires more inspection. Preserve assessment/audit artifacts and disclose incomplete or contaminated confirmation. See [the confirmation workflow](blind-confirmation.md).

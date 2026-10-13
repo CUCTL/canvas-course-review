@@ -51,6 +51,12 @@ def render(manifest, review, narrative):
     lines = [f"# {course['name']} — CUOCDR review", '', f"Status: **{review['status']}**",
              f"Course ID: {course['id']}", f"Snapshot: {manifest['snapshot_at']}",
              f"Mode: {manifest['mode']}", f"Rubric: {manifest['rubric_version']}"]
+    confirmation = review.get('confirmation')
+    if confirmation:
+        if confirmation['status'] == 'reconciled' and confirmation['blind']:
+            lines += ['', 'Confirmation: Independent blind assessment completed, followed by reconciliation and a policy-consistency audit. [Details](confirmation/reconciliation.md)']
+        else:
+            lines += ['', f"Confirmation: {confirmation['status']}; independent blind confirmation remains incomplete."]
     pending = sum(c['rating'] is None and not c['deferred'] for c in review['criteria'])
     deferred = sum(c['deferred'] for c in review['criteria'])
     if review['status'] != 'completed' or pending or deferred or manifest['limitations'] or review['limitations']:
@@ -200,6 +206,25 @@ def validate(root, m, r):
         check(bool(r.get('limitations')), 'partial/failed report requires limitations')
     if r.get('status') != 'failed':
         check(not any(v in {'failed', 'not_started'} for v in stages.values()), 'usable report contains failed/unstarted stage')
+    confirmation = r.get('confirmation')
+    if confirmation is not None:
+        if not isinstance(confirmation, dict):
+            errors.append('confirmation must be an object')
+        else:
+            check(confirmation.get('status') in {'reconciled', 'pending', 'unavailable'}, 'invalid confirmation status')
+            check(type(confirmation.get('blind')) is bool, 'confirmation blind must be boolean')
+            check(isinstance(confirmation.get('limitations'), list) and all(nonempty(x) for x in confirmation.get('limitations', [])), 'invalid confirmation limitations')
+            if confirmation.get('status') == 'reconciled':
+                check(confirmation.get('blind') is True, 'reconciled confirmation requires an independent blind assessment')
+                for field in ('input_index', 'independent_assessment', 'reconciliation', 'policy_audit'):
+                    try:
+                        local_file(root, confirmation.get(field, ''))
+                    except (ValueError, TypeError) as e:
+                        errors.append(f'confirmation {field}: {e}')
+                check(confirmation.get('reconciliation') == 'confirmation/reconciliation.md', 'confirmation reconciliation must use its report link path')
+            else:
+                check(bool(confirmation.get('limitations')), 'incomplete confirmation requires limitations')
+                check(r.get('status') != 'completed', 'completed report has incomplete independent confirmation')
     records = r.get('criteria', [])
     ids = [c.get('id') for c in records]
     check(all(type(cid) is int and cid in IDS for cid in ids) and len(set(ids)) == len(ids), 'invalid/duplicate criterion ids')
