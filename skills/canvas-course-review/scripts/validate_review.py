@@ -12,6 +12,11 @@ REVISIONS = {'Minor Revision', 'Moderate Revision', 'Major Revision'}
 PRIORITIES = {'Moderate Revision', 'Major Revision'}
 STATES = {'verified', 'not_evidenced', 'not_verified', 'not_applicable'}
 OUTCOMES = {'completed', 'partial', 'failed', 'not_started'}
+LEVELS = {
+    'api_content': '1 — API content + narrative',
+    'api_browser': '2 — API content + necessary browser verification + narrative',
+    'api_browser_blind': '3 — API content + necessary browser verification + blind assessment + narrative',
+}
 
 
 def nonempty(value):
@@ -51,6 +56,13 @@ def render(manifest, review, narrative):
     lines = [f"# {course['name']} — CUOCDR review", '', f"Status: **{review['status']}**",
              f"Course ID: {course['id']}", f"Snapshot: {manifest['snapshot_at']}",
              f"Mode: {manifest['mode']}", f"Rubric: {manifest['rubric_version']}"]
+    level = review.get('review_level')
+    if level is not None:
+        lines += [f"Review level: {LEVELS[level]} ({review['level_selection']})"]
+        if level == 'api_content':
+            lines += ['', 'Browser verification and independent blind assessment were outside the selected review scope. Browser-dependent conclusions remain unverified unless supported by supplied evidence within its stated scope.']
+        elif level == 'api_browser':
+            lines += ['', 'Independent blind assessment was outside the selected review scope.']
     confirmation = review.get('confirmation')
     if confirmation:
         if confirmation['status'] == 'reconciled' and confirmation['blind']:
@@ -207,6 +219,19 @@ def validate(root, m, r):
     if r.get('status') != 'failed':
         check(not any(v in {'failed', 'not_started'} for v in stages.values()), 'usable report contains failed/unstarted stage')
     confirmation = r.get('confirmation')
+    level = r.get('review_level')
+    if 'review_level' in r:
+        check(isinstance(level, str) and level in LEVELS, 'invalid review level')
+        selection = r.get('level_selection')
+        check(selection in ('user_selected', 'default'), 'invalid level selection')
+        if selection == 'default':
+            check(level == 'api_browser', 'default review level must be api_browser')
+        if level in ('api_content', 'api_browser'):
+            check(confirmation is None, 'levels 1–2 exclude independent confirmation; use level 3')
+        if level == 'api_browser_blind' and r.get('status') != 'failed':
+            check(isinstance(confirmation, dict), 'level 3 requires confirmation metadata')
+    elif 'level_selection' in r:
+        errors.append('level selection requires review level')
     if confirmation is not None:
         if not isinstance(confirmation, dict):
             errors.append('confirmation must be an object')

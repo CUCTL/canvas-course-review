@@ -6,7 +6,7 @@ The skill reviews course design without modifying Canvas or reading student grad
 
 ## Use
 
-The visible, shareable skill folder is at [skills/canvas-course-review](skills/canvas-course-review/SKILL.md). Invoke `$canvas-course-review` with a course URL/ID or an export and the desired scope. Pre-launch review is the default. For use in other projects, symlink that folder into `~/.codex/skills/canvas-course-review`; keep this checkout as the maintained source. A repository-local symlink under `.agents/skills/` preserves automatic discovery without duplicating the files.
+The visible, shareable skill folder is at [skills/canvas-course-review](skills/canvas-course-review/SKILL.md). Invoke `$canvas-course-review` with a course URL/ID or an export and the desired scope. Pre-launch scope is the default. When no review level is specified, the skill asks the user to choose and defaults to level 2 after allowing a reply. For use in other projects, symlink that folder into `~/.codex/skills/canvas-course-review`; keep this checkout as the maintained source. A repository-local symlink under `.agents/skills/` preserves automatic discovery without duplicating the files.
 
 The shareable skill files are all committed under `skills/canvas-course-review/`, including dependencies, collector, validator, and references. Share the repository or copy that complete folder; the installed local symlink is not the distributable. See [portable setup and collection coverage](skills/canvas-course-review/references/api-collection.md).
 
@@ -16,6 +16,16 @@ python3 -m venv .venv
 .venv/bin/python skills/canvas-course-review/scripts/collect_course.py \
   --course-id 12345 --env-file /absolute/path/to/.env
 ```
+
+Choose a review level:
+
+| Level | Included work |
+| --- | --- |
+| 1 — API content | API/local instructional-file review + narrative and reports |
+| 2 — API + browser (default) | Level 1 + browser verification where API/local evidence is insufficient |
+| 3 — API + browser + blind assessment | Level 2 + independent blind assessment, reconciliation, and policy audit |
+
+All levels retain the 42-item design rubric, grammar pass, narrative checklist, and report validation. Level 1 explicitly leaves browser-dependent conclusions unverified. Levels 1–2 do not include independent confirmation. The selected level appears in the report. See [review-level scope and selection](skills/canvas-course-review/references/review-levels.md).
 
 Example request:
 
@@ -40,6 +50,6 @@ The internal manifest retains the complete file inventory; the report omits excl
 
 Faculty reports include the narrative, full rubric, and a revision checklist. Detailed sources and verification coverage are saved separately in `evidence-register.md`; excluded files remain in internal JSON only. Both Markdown artifacts are generated and checked by the validator.
 
-Each new review includes an independent blind agent assessment using saved raw evidence, followed by reconciliation and a report-policy audit. Browser checks are not repeated by default. Confirmation records stay with the ignored course-review artifacts; the reusable workflow is included in the shared skill.
+Level 3 includes an independent blind agent assessment using saved raw evidence, followed by reconciliation and a report-policy audit. Browser checks are not repeated by default. Confirmation records stay with the ignored course-review artifacts; the reusable workflow is included in the shared skill.
 
 Scope is course design only, even for published/running courses. Interaction and feedback are assessed as documented plans and designed opportunities. Actual teaching performance, feedback execution, student activity/outcomes, and accommodation delivery are outside scope; next-term teaching tips remain optional.

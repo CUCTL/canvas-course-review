@@ -1,6 +1,6 @@
 # Review policy
 
-Version 1.2, October 13, 2026. CUOCDR v0.9 is the rating authority. The preserved rubric has 42 items numbered 1–24 and 26–43; do not add item 25. Preserve category order and criterion wording.
+Version 1.3, October 13, 2026. CUOCDR v0.9 is the rating authority. The preserved rubric has 42 items numbered 1–24 and 26–43; do not add item 25. Preserve category order and criterion wording.
 
 ## Ratings and evidence
 
@@ -28,11 +28,15 @@ Recommend hiding navigation only when unused status is established or the instru
 
 Text rating labels are authoritative; do not rely on color/icons. Review tables contain ID, criterion, rating, evidence, and action/verification. Show scope, snapshot, rubric version, source references, coverage limitations, deferred fields, priority actions, and mechanical grammar separately. Write the narrative after findings are finalized, then display it immediately after the course identity/date/mode/status and brief limitations note, before the rubric tables. Put full scope/limitations and stage outcomes after the tables and grammar findings. Keep the detailed source register, mappings, file checklist and inventory in a separate evidence register linked from the main report; suggestions must not become new unsupported deficiencies.
 
-Report-generation status is separate from course quality. completed means all report stages were performed, even if technical/policy verification remains pending and is explicitly disclosed. partial means scope or a report stage remains unfinished. failed means no usable review was produced. Never turn failure text or missing stages into a clean success.
+Report-generation status is separate from course quality. completed means all stages required by the selected review level were performed, even if technical/policy verification remains pending and is explicitly disclosed. partial means scope or a report stage remains unfinished. failed means no usable review was produced. Never turn failure text or missing stages into a clean success.
 
 ## Independent confirmation
 
-Before presenting a new review, obtain a separate agent’s blind assessment of the same saved raw evidence and controlling policy. Freeze both assessments before comparison; reconcile against evidence rather than averaging. Then audit the final report and narrative for consistency, documenting that comparison is no longer blind. Reuse existing browser evidence unless a concrete gap requires more inspection. Preserve assessment/audit artifacts and disclose incomplete or contaminated confirmation. See [the confirmation workflow](blind-confirmation.md).
+For level 3, before presenting a new review, obtain a separate agent’s blind assessment of the same saved raw evidence and controlling policy. Freeze both assessments before comparison; reconcile against evidence rather than averaging. Then audit the final report and narrative for consistency, documenting that comparison is no longer blind. Reuse existing browser evidence unless a concrete gap requires more inspection. Preserve assessment/audit artifacts and disclose incomplete or contaminated confirmation. See [the confirmation workflow](blind-confirmation.md).
+
+## Review levels
+
+Offer three levels when the user has not selected one: API content + narrative (1), API content + necessary browser verification + narrative (2; recommended default), and API content + necessary browser verification + blind assessment + narrative (3). The rubric, design-only boundary, grammar pass, narrative checklist, and report format apply to all levels. Level 1 cannot establish browser-dependent behavior; leave those conclusions unverified, with explicit limits and next steps. Levels 1–2 do not require independent confirmation. All levels require a primary consistency check and validation. Level 3 requires blind assessment, reconciliation, and the final policy audit. See [review levels](review-levels.md). Do not infer a deficiency from a check intentionally outside the selected level, or silently downgrade unfinished level-3 confirmation.
 
 ## Design-only boundary
 

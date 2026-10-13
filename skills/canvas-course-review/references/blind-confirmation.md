@@ -1,6 +1,6 @@
 # Independent blind confirmation
 
-Run this step for each course-design review before delivering findings. Reuse saved API, document, and browser evidence; do not repeat browser verification by default. This is an independent policy/evidence assessment, not student grading or authority to change Canvas.
+Run this step for level 3 course-design reviews before delivering findings. Levels 1–2 do not require it; use the primary consistency check and report validation instead. Reuse saved API, document, and browser evidence; do not repeat browser verification by default. This is an independent policy/evidence assessment, not student grading or authority to change Canvas.
 
 ## Phase 1: independent assessment
 
@@ -24,4 +24,4 @@ If an independent agent is unavailable or blindness is contaminated and cannot b
 
 ## Artifacts
 
-Keep private run artifacts under `confirmation/`: the input index, frozen `independent-assessment.json`, independent notes, `reconciliation.md`, and `policy-audit.md`. Preserve originals. In review.json, record optional `confirmation` metadata with `status` (reconciled, pending, unavailable), `blind` (whether Phase 1 remained independent), local artifact paths, and limitations. New reviews require this step; older reports without that metadata remain readable but must not acquire a confirmation claim. Main report needs only a short confirmation statement and link; detailed differences belong in the evidence appendix/confirmation files.
+Keep private run artifacts under `confirmation/`: the input index, frozen `independent-assessment.json`, independent notes, `reconciliation.md`, and `policy-audit.md`. Preserve originals. In review.json, record optional `confirmation` metadata with `status` (reconciled, pending, unavailable), `blind` (whether Phase 1 remained independent), local artifact paths, and limitations. New level-3 reviews require this step; older reports without that metadata remain readable but must not acquire a confirmation claim. Main report needs only a short confirmation statement and link; detailed differences belong in the evidence appendix/confirmation files.

@@ -162,6 +162,64 @@ class ContractTests(unittest.TestCase):
         report = v.render(self.m, self.r, (self.root / 'narrative.md').read_text())
         self.assertNotIn('Independent blind assessment completed', report)
 
+    def test_lower_levels_complete_without_blind_confirmation(self):
+        for level in ('api_content', 'api_browser'):
+            with self.subTest(level=level):
+                self.r.update(review_level=level, level_selection='user_selected')
+                # Unresolved behavioral evidence is not a failure of the scoped review.
+                self.r['criteria'][0].update(rating=None, evidence_status='not_verified',
+                    verification_step='Verify interface behavior in the browser.',
+                    uncertainty='Browser evidence is not available within this review.')
+                self.r['limitations'] = ['Interface behavior remains unverified.']
+                self.assertEqual([], self.errors())
+                report = v.render(self.m, self.r, (self.root / 'narrative.md').read_text())
+                self.assertIn(v.LEVELS[level], report)
+                self.assertNotIn('Independent blind assessment completed', report)
+        self.assertIn('Independent blind assessment was outside', report)
+
+    def test_level_selection_and_default_are_validated(self):
+        self.r.update(review_level='api_browser', level_selection='default')
+        self.assertEqual([], self.errors())
+        self.r['review_level'] = 'api_content'
+        self.assertIn('default review level must be api_browser', self.errors())
+        self.r['level_selection'] = 'user_selected'
+        self.assertEqual([], self.errors())
+        self.r['review_level'] = 'invented'
+        self.assertIn('invalid review level', self.errors())
+        self.r['review_level'] = 'api_browser'
+        del self.r['level_selection']
+        self.assertIn('invalid level selection', self.errors())
+        del self.r['review_level']
+        self.r['level_selection'] = 'default'
+        self.assertIn('level selection requires review level', self.errors())
+
+    def test_level_three_requires_reconciled_blind_confirmation_for_completion(self):
+        self.r.update(review_level='api_browser_blind', level_selection='user_selected')
+        self.assertIn('level 3 requires confirmation metadata', self.errors())
+        self.r['confirmation'] = {'status': 'pending', 'blind': False,
+                                  'limitations': ['Independent assessment is unfinished.']}
+        self.assertIn('completed report has incomplete independent confirmation', self.errors())
+        self.r.update(status='partial', limitations=['Independent assessment is unfinished.'])
+        text = (self.root / 'narrative.md').read_text()
+        (self.root / 'narrative.md').write_text(text.replace('The module sequence', 'This partial review finds the module sequence'))
+        self.r['narrative']['strengths_excerpt'] = 'the module sequence provides a clear starting point.'
+        self.assertEqual([], self.errors())
+        folder = self.root / 'confirmation'
+        folder.mkdir()
+        confirmation = self.r['confirmation']
+        for key, filename in [('input_index', 'input-index.json'), ('independent_assessment', 'independent.json'),
+                              ('reconciliation', 'reconciliation.md'), ('policy_audit', 'policy-audit.md')]:
+            (folder / filename).write_text('Saved evidence for synthetic confirmation')
+            confirmation[key] = f'confirmation/{filename}'
+        confirmation.update(status='reconciled', blind=True, limitations=[])
+        self.r.update(status='completed', limitations=[])
+        self.assertEqual([], self.errors())
+
+    def test_lower_levels_cannot_claim_independent_confirmation(self):
+        self.r.update(review_level='api_browser', level_selection='user_selected',
+                      confirmation={'status': 'pending', 'blind': False, 'limitations': ['Pending.']})
+        self.assertIn('levels 1–2 exclude independent confirmation; use level 3', self.errors())
+
     def test_missing_duplicate_or_invented_criterion(self):
         original = copy.deepcopy(self.r)
         for mutation in ('missing', 'duplicate', 'invented'):
