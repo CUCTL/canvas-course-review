@@ -121,6 +121,8 @@ class Collector:
         self.write_json('collection.json', {'status': status, 'counts': self.counts, 'errors': self.errors,
                                            'started_at': self.started, 'updated_at': datetime.now(timezone.utc).isoformat()})
         self.write_json('course.json', {'course_id': self.course_id, 'course_name': self.name, 'objects': self.objects})
+        for candidate in self.browser_checks:
+            candidate.setdefault('preferred_method', 'api_first')
         self.write_json('browser-checks.json', {'status': 'pending', 'checks': self.browser_checks})
         return status
 
@@ -176,7 +178,7 @@ class Collector:
             data['collection_context'] = context
         path = f'source/{key}.json'
         self.write_json(path, data)
-        self.source(key, path, location, f'API {kind} design evidence; browser verification pending')
+        self.source(key, path, location, f'API {kind} design evidence; analyze API evidence before browser escalation')
         self.objects[key] = data
         pub = data.get('published')
         state = 'published' if pub is True else 'unpublished' if pub is False else 'unknown'
@@ -184,7 +186,7 @@ class Collector:
                                'publication_state': state, 'status': 'inspected', 'source_ids': [key]})
         if kind not in ('question', 'rubric', 'settings'):
             self.browser_checks.append({'id': key, 'location': safe_url(location), 'status': 'pending',
-                                        'reason': 'Verify rendered layout/accessibility/access or scope; prioritize home/navigation, media, and suspected findings'})
+                                        'reason': 'Verify from API/local evidence first; use browser only for an unresolved rendered, interaction, or learner-access question'})
         for field in ('syllabus_body', 'body', 'description', 'message', 'instructions', 'question_text'):
             if isinstance(data.get(field), str):
                 html = f'source/{key}-{field}.html'
@@ -203,7 +205,7 @@ class Collector:
                     self.link_seen.add(token)
                     resource.update(target=target, source_id=key, status='pending')
                     self.browser_checks.append({'id': f'linked-{len(self.link_seen)}', 'location': target,
-                                                'reason': f"Inspect linked {resource['tag']} resource; URL extraction is not validation", **resource})
+                                                'reason': f"Inspect linked {resource['tag']} resource using API/local evidence first; URL extraction is not validation", **resource})
         if kind == 'item' and data.get('type') in ('File', 'ExternalUrl', 'ExternalTool'):
             self.browser_checks.append({'id': key + '-resource', 'location': safe_url(data.get('external_url') or location),
                                         'status': 'pending', 'reason': f"Inspect module resource: {data['type']}"})
