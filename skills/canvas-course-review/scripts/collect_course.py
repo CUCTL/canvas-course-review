@@ -112,7 +112,7 @@ class Collector:
                         'New Quiz item/question contents are not exposed by the supported SDK methods; inspect in browser.',
                         'Availability overrides and individual accommodation/access conditions are not collected.']
         manifest = {'schema_version': 1, 'course': {'id': str(self.course_id), 'name': self.name},
-                    'mode': self.mode, 'scope': 'Course-wide instructor/API design snapshot, including accessible drafts and unlinked content; published_view requires browser scope resolution.',
+                    'mode': self.mode, 'scope': 'Course-wide instructor/API design snapshot, including accessible drafts and unlinked content; published_view records visible/configured content scope; course delivery is not evaluated.',
                     'snapshot_at': self.started, 'rubric_version': 'CUOCDR v0.9',
                     'sources': self.sources, 'inventory': self.inventory, 'limitations': limitations,
                     'collection': {'status': status, 'counts': self.counts, 'errors': self.errors},
@@ -186,7 +186,7 @@ class Collector:
                                'publication_state': state, 'status': 'inspected', 'source_ids': [key]})
         if kind not in ('question', 'rubric', 'settings'):
             self.browser_checks.append({'id': key, 'location': safe_url(location), 'status': 'pending',
-                                        'reason': 'Verify from API/local evidence first; use browser only for an unresolved rendered, interaction, or learner-access question'})
+                                        'reason': 'Verify from API/local evidence first; use browser only for an unresolved rendered, interface, or configured-resource/navigation question'})
         for field in ('syllabus_body', 'body', 'description', 'message', 'instructions', 'question_text'):
             if isinstance(data.get(field), str):
                 html = f'source/{key}-{field}.html'

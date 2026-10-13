@@ -1,6 +1,6 @@
 # Review policy
 
-Version 1.1, October 13, 2026. CUOCDR v0.9 is the rating authority. The preserved rubric has 42 items numbered 1–24 and 26–43; do not add item 25. Preserve category order and criterion wording.
+Version 1.2, October 13, 2026. CUOCDR v0.9 is the rating authority. The preserved rubric has 42 items numbered 1–24 and 26–43; do not add item 25. Preserve category order and criterion wording.
 
 ## Ratings and evidence
 
@@ -12,7 +12,7 @@ Evidence states:
 - not_verified: access, sampling, missing policy, or technical limits prevent a conclusion; leave rating null.
 - not_applicable: a legitimate N/A, with rationale.
 
-Use a deferred flag for identified blueprint/pre-launch instructor/contact/introduction placeholders; leave the rating null and record when/who should complete them. This exception is not a blanket exemption for assigned or delivered courses.
+Use a deferred flag for identified blueprint/pre-launch instructor/contact/introduction placeholders; leave the rating null and record when/who should complete them. This exception does not exempt other design requirements or excuse missing personalization once an instructor is assigned.
 
 Source time bands are guidance: Minor <20 minutes, Moderate <40 minutes, Major 60+ minutes. They overlap and leave 40–59 minutes unclear. Do not invent a numeric classification rule; explain ambiguous choices for instructor judgment.
 
@@ -22,7 +22,7 @@ Item 1 links to authenticated CU syllabus requirements; item 17 contains an unre
 
 Kaltura/video.cedarville.edu captions are expected, not automatically verified. Inspect available tracks/transcripts and content; provider identity alone is insufficient. Screenshots alone cannot establish hidden semantics, keyboard operation, screen-reader usability, or universal learner access. Vendor accessibility/privacy statements establish disclosure, not complete compliance.
 
-Recommend hiding navigation only when unused status is established or the instructor confirms it. Evaluate planned interaction and feedback in pre-launch courses without requiring messages, grades, or learner participation to have occurred. Keep Christian Perspective findings evidence-based and specific to the rubric.
+Recommend hiding navigation only when unused status is established or the instructor confirms it. Evaluate documented interaction and feedback design in every mode, including existing/published courses, without requiring messages, grades, or learner participation to have occurred. Keep Christian Perspective findings evidence-based and specific to the rubric.
 
 ## Presentation
 
@@ -33,3 +33,9 @@ Report-generation status is separate from course quality. completed means all re
 ## Independent confirmation
 
 Before presenting a new review, obtain a separate agent’s blind assessment of the same saved raw evidence and controlling policy. Freeze both assessments before comparison; reconcile against evidence rather than averaging. Then audit the final report and narrative for consistency, documenting that comparison is no longer blind. Reuse existing browser evidence unless a concrete gap requires more inspection. Preserve assessment/audit artifacts and disclose incomplete or contaminated confirmation. See [the confirmation workflow](blind-confirmation.md).
+
+## Design-only boundary
+
+Review planned and authored course design, not course delivery. Interaction criteria concern documented expectations, planned substantive contact, communication guidance, and opportunities designed into the course. Feedback criteria concern stated policies, assessment criteria, self-review opportunities, and designed feedback mechanisms. Do not evaluate actual instructor responsiveness, feedback execution/quality, student engagement/achievement, attendance, or actual accommodation implementation. Do not turn empty activity histories, unavailable real-learner sessions, or absent posted grades into design deficiencies.
+
+Configured dates, navigation/visibility, media playback, document accessibility, quiz instructions and preview controls may be checked as design evidence. Actual enrolled-learner testing and delivery outcomes are outside this skill; their absence is a scope boundary, not unfinished design review. Missing documented design intent can remain pending, with a request to clarify the plan. Keep instructor personalization as preparation/deferred content where policy permits. Practical teaching tips are optional future suggestions and never evidence that delivery failed.

@@ -22,7 +22,7 @@ The default output root is `/tmp/canvas-tools/course-review`; each invocation cr
 
 ## Collection scope
 
-All remote operations use read-only canvasapi model methods. The collector reads course identity/syllabus, course settings, front page when home uses a wiki page, navigation tabs, modules/items, all accessible pages, assignments, discussion prompts, Classic Quizzes/questions, course rubric details and associations, file metadata, and New Quiz instructions/settings. Iteration follows pagination and preserves previously read records if a later page fails. Page bodies are fetched individually; raw HTML fields retain styling, iframe sources, image alternatives, and table markup. Draft and unlinked content remain inventoried even in published_view mode: use API availability/prerequisite/publication evidence first; verify effective learner access in the browser only where the criterion depends on it and API evidence is insufficient.
+All remote operations use read-only canvasapi model methods. The collector reads course identity/syllabus, course settings, front page when home uses a wiki page, navigation tabs, modules/items, all accessible pages, assignments, discussion prompts, Classic Quizzes/questions, course rubric details and associations, file metadata, and New Quiz instructions/settings. Iteration follows pagination and preserves previously read records if a later page fails. Page bodies are fetched individually; raw HTML fields retain styling, iframe sources, image alternatives, and table markup. Draft and unlinked content remain inventoried even in published_view mode: use API availability/prerequisite/publication evidence first; inspect configured resource/navigation behavior only where design evidence is insufficient; do not require actual enrolled-learner access or evaluate delivered teaching.
 
 Only selected course-design fields are stored. SDK internals, enrollment details, submissions, discussion replies/participants, rubric assessments, grades, and quiz access-code values are excluded. Exceptions retain operation/location/type, not server response bodies. File download URLs are omitted, and credential/signature query parameters are removed from indexed locations while resource identifiers are retained; original authorized course HTML is preserved as evidence and must remain local.
 
@@ -49,7 +49,7 @@ SDK methods and pagination were checked against [canvasapi Course documentation]
 | Question | Preferred evidence | Browser trigger |
 | --- | --- | --- |
 | Course policies, objectives, activities, assessment alignment, grammar | API text/HTML, module relationships, rubric/quiz details | Missing content or ambiguity requiring the displayed view |
-| Dates, points, time limits, publication, prerequisites | API settings/metadata | Effective learner access or UI behavior cannot be established |
+| Dates, points, time limits, publication, prerequisites | API settings/metadata | Configured visibility/resource behavior or preview UI needs clarification; no real learner session required |
 | Instructional DOCX/PDF/PPTX/spreadsheets | canvasapi file download; local content/structure inspection and targeted rendering | External document or interaction unavailable locally |
 | Headings, alt attributes, table markup, declared styles | Raw API HTML/document structure | Visual meaning, computed contrast, keyboard behavior, or layout needs confirmation |
 | Video/captions and external tools | Available metadata/transcripts for content and declared caption availability | Playback, caption accuracy/synchronization, authentication, or tool interaction |
@@ -67,3 +67,5 @@ A check may be partly answered by the API while its visual/access question remai
 - A catalog landing page or resolver is not full-text access. Record the actual provider restriction and next step; do not bypass security challenges, accept new terms, purchase access, or replace unavailable reading evidence with assumptions.
 
 The main report should help faculty act. Put only revision actions, concise findings, and material limitations there; preserve detailed traceability and verification dispositions in the separate evidence register and internal JSON.
+
+All verification remains within course design. No delivery analytics, actual feedback/response histories, learner participation, grade outcomes, attendance or individual accommodation implementation are collected or rated. Unavailable live learner access is recorded as outside scope; it is not a design-review blocker.

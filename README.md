@@ -41,3 +41,5 @@ The internal manifest retains the complete file inventory; the report omits excl
 Faculty reports include the narrative, full rubric, and a revision checklist. Detailed sources and verification coverage are saved separately in `evidence-register.md`; excluded files remain in internal JSON only. Both Markdown artifacts are generated and checked by the validator.
 
 Each new review includes an independent blind agent assessment using saved raw evidence, followed by reconciliation and a report-policy audit. Browser checks are not repeated by default. Confirmation records stay with the ignored course-review artifacts; the reusable workflow is included in the shared skill.
+
+Scope is course design only, even for published/running courses. Interaction and feedback are assessed as documented plans and designed opportunities. Actual teaching performance, feedback execution, student activity/outcomes, and accommodation delivery are outside scope; next-term teaching tips remain optional.
