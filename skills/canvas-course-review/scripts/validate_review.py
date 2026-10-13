@@ -50,11 +50,14 @@ def render(manifest, review, narrative):
     course = manifest['course']
     lines = [f"# {course['name']} — CUOCDR review", '', f"Status: **{review['status']}**",
              f"Course ID: {course['id']}", f"Snapshot: {manifest['snapshot_at']}",
-             f"Mode: {manifest['mode']}", f"Scope: {manifest['scope']}",
-             f"Rubric: {manifest['rubric_version']}", '', '## Stage outcomes', '']
-    lines += [f"- {key}: {value}" for key, value in review['stages'].items()]
-    lines += ['', '## Limitations', '']
-    lines += [f'- {item}' for item in manifest['limitations'] + review['limitations']] or ['No recorded limitations.']
+             f"Mode: {manifest['mode']}", f"Rubric: {manifest['rubric_version']}"]
+    pending = sum(c['rating'] is None and not c['deferred'] for c in review['criteria'])
+    deferred = sum(c['deferred'] for c in review['criteria'])
+    if review['status'] != 'completed' or pending or deferred or manifest['limitations'] or review['limitations']:
+        lines += ['', f"Review note: Pending criterion checks: {pending}; deferred items: {deferred}. "
+                  "Read Scope and limitations below for evidence gaps and review boundaries."]
+    if narrative:
+        lines += ['', '## Faculty-facing narrative draft', '', narrative.strip()]
     records = {c['id']: c for c in review['criteria']}
     for title, items in rubric():
         lines += ['', f'## {title}', '', '| ID | Criterion | Rating | Evidence | Action / verification |',
@@ -75,12 +78,14 @@ def render(manifest, review, narrative):
     lines += ['', '## Mechanical grammar and spelling', '']
     lines += [f"- Source {g['source_id']}: {g['issue']} Suggested fix: {g['suggested_fix']}" for g in review['grammar']] or [
         'No confirmed mechanical issues found.' if review['stages']['grammar'] == 'completed' else 'Mechanical review incomplete; see limitations.']
+    lines += ['', '## Scope and limitations', '', f"Scope: {manifest['scope']}", '']
+    lines += [f'- {item}' for item in manifest['limitations'] + review['limitations']] or ['No recorded limitations.']
+    lines += ['', '## Stage outcomes', '']
+    lines += [f"- {key}: {value}" for key, value in review['stages'].items()]
     lines += ['', '## Source register', '']
     lines += [f"- {s['id']}: {s['location']} — {s['description']}" for s in manifest['sources']]
     lines += ['', '## Coverage inventory', '']
     lines += [f"- {i['id']}: {i['location']} — {i['status']}; view: {i['view']}; publication: {i['publication_state']}. {i.get('reason', '')}" for i in manifest['inventory']]
-    if narrative:
-        lines += ['', '## Faculty-facing narrative draft', '', narrative.strip()]
     return '\n'.join(lines) + '\n'
 
 

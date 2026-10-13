@@ -1,6 +1,6 @@
 # Canvas course review
 
-A Codex skill using API extraction plus browser verification for Cedarville's CUOCDR v0.9 course-design review. It preserves all 42 rubric criteria, uses OSCQR as explanatory guidance, and appends faculty-facing narrative feedback within 600 words.
+A Codex skill using API extraction plus browser verification for Cedarville's CUOCDR v0.9 course-design review. It preserves all 42 rubric criteria, uses OSCQR as explanatory guidance, and places faculty-facing narrative feedback near the top of the report, within 600 words.
 
 The skill reviews course design without modifying Canvas or reading student grades/submissions. For live courses, a read-only canvasapi collector gathers structured evidence, followed by targeted browser checks. Browser-only reviews and supplied exports remain supported. No nested AI API, OpenAI key, or server is required. Hybrid review requires an authorized Canvas API token and authenticated browser access; credentials and snapshots stay local.
 

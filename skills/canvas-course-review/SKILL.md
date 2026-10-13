@@ -29,7 +29,7 @@ Evaluate all criteria, linking findings to inspected source records. Map objecti
 
 Run a separate mechanical grammar/spelling pass. Confirm each error against its original source where possible; distinguish conversion artifacts. Keep pedagogical advice out of this pass.
 
-After finalizing findings, read [narrative feedback requirements](references/narrative-feedback-guidelines.md) and draft narrative.md. It must include the course-name subject, evidenced strengths first, themed coverage and concrete next steps for every Moderate/Major Revision, accessibility/compliance priorities, three practical next-term teaching tips, and an institutional-support closing, within 600 words including subject and closing. Record exact passages in the coverage map; judge tone, specificity, completeness, and priority manually as well as checking the word count.
+The narrative is written after finalizing findings but displayed near the top of review.md: course identity/date/mode/status, brief limitations note when applicable, narrative, rubric tables/priority actions, grammar findings, then full scope/limitations and source inventory. After finalizing findings, read [narrative feedback requirements](references/narrative-feedback-guidelines.md) and draft narrative.md. It must include the course-name subject, evidenced strengths first, themed coverage and concrete next steps for every Moderate/Major Revision, accessibility/compliance priorities, three practical next-term teaching tips, and an institutional-support closing, within 600 words including subject and closing. Record exact passages in the coverage map; judge tone, specificity, completeness, and priority manually as well as checking the word count.
 
 ## Artifacts and validation
 

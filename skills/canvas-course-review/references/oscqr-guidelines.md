@@ -26,7 +26,7 @@ Separate these evidence states from CU ratings:
 
 A verified deficiency can support a revision rating. An unverified technical feature should produce a verification step, not an invented pass/fail. Retain the CU ratings and time guidance; OSCQR examples do not establish CU severity. Treat assigned blueprint placeholders according to the existing CU exception: record them as deferred, without presenting them as completed evidence. Review planned design in pre-launch courses; do not require actual instructor messages, grades, or learner participation to have occurred.
 
-After completing the review, append a faculty-facing narrative feedback draft using [the narrative feedback guidelines](narrative-feedback-guidelines.md). Address every Moderate/Major Revision through themed, actionable prose, prioritize accessibility/compliance concerns, include at least three practical next-term teaching tips, and verify the complete draft stays within 600 words. Keep its claims consistent with the finalized evidence and limitations.
+After completing the review, place a faculty-facing narrative feedback draft near the top of the report, after course identity/status and a brief limitations note and before the rubric tables, using [the narrative feedback guidelines](narrative-feedback-guidelines.md). Address every Moderate/Major Revision through themed, actionable prose, prioritize accessibility/compliance concerns, include at least three practical next-term teaching tips, and verify the complete draft stays within 600 words. Keep its claims consistent with the finalized evidence and limitations.
 
 ## 1. Course Information
 

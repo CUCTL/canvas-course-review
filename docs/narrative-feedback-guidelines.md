@@ -1,6 +1,6 @@
 # Faculty-facing narrative feedback
 
-After completing the course-design review, append a faculty-facing narrative feedback draft to the review report. Use the finalized findings as its source; the narrative supplements the criterion tables and does not replace them. It is a draft for institutional review, not authorization to email faculty or post feedback in Canvas.
+After completing the course-design review, prepare a faculty-facing narrative feedback draft and place it near the top of the report, immediately after course identity, date, scope/mode, and review status. Keep a brief evidence-limitations note before the narrative when applicable; put the detailed rubric tables, grammar findings, and technical/source appendices below it. Use the finalized findings as its source; the narrative supplements the criterion tables and does not replace them. It is a draft for institutional review, not authorization to email faculty or post feedback in Canvas.
 
 ## Draft requirements
 
