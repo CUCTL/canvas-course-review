@@ -126,6 +126,9 @@ def render(manifest, review, narrative):
             placeholder = c.get('template_placeholder')
             if placeholder:
                 action += f'\nInstructor preparation reminder: {placeholder["reminder"]}'
+                preparation_links = action_links(placeholder)
+                if preparation_links:
+                    action += f' — {preparation_links}'
             lines.append('| ' + ' | '.join(cell(v) for v in (cid, wording, label, evidence, action)) + ' |')
     lines += ['', '## Revision checklist', '']
     revisions = [c for c in review['criteria'] if c['rating'] in PRIORITIES | {'Minor Revision'}]
@@ -147,7 +150,7 @@ def render(manifest, review, narrative):
         lines += ['', '## Instructor preparation reminders', '',
                   'Intentional master/blueprint scaffolds count as Present when the remaining criterion requirements are met. These reminders identify instructor preparation, not completed personalization or verified learner visibility.', '']
         for c in placeholders:
-            related = action_links(c)
+            related = action_links(c['template_placeholder'])
             lines.append(f'- CU {c["id"]}: {c["template_placeholder"]["reminder"]}' +
                          (f' — {related}' if related else ''))
     lines += ['', '## Mechanical grammar and spelling', '']
@@ -321,29 +324,33 @@ def validate(root, m, r):
         check(isinstance(c.get('source_ids'), list) and bool(c.get('source_ids')) and set(c.get('source_ids', [])) <= source_ids, prefix + 'missing/unresolved sources')
         check(all(isinstance(c.get(k), str) for k in ('action_plan', 'verification_step', 'uncertainty')), prefix + 'text fields required')
         check(type(c.get('deferred')) is bool, prefix + 'deferred boolean required')
-        links = c.get('action_links', [])
-        check(isinstance(links, list), prefix + 'action_links must be an array')
-        paired = isinstance(links, list) and any(isinstance(link, dict) and 'action' in link for link in links)
-        for link in links if isinstance(links, list) else []:
-            if not isinstance(link, dict):
-                errors.append(prefix + 'invalid action link')
-                continue
-            check(all(nonempty(link.get(k)) for k in ('label', 'url', 'source_id')), prefix + 'action link label/url/source_id required')
-            if paired:
-                check(nonempty(link.get('action')), prefix + 'paired action links each need a specific action')
-            sid = link.get('source_id')
-            check(isinstance(sid, str) and sid in c.get('source_ids', []), prefix + 'action link needs a criterion source')
-            try:
-                target = urlsplit(link.get('url', ''))
-                source = urlsplit(source_locations.get(sid, ''))
-                course_path = f"/courses/{m.get('course', {}).get('id')}"
-                check(target.scheme == 'https' and bool(target.netloc) and not target.username and not target.password
-                      and (target.path == course_path or target.path.startswith(course_path + '/'))
-                      and (target.scheme, target.netloc, unquote(target.path), target.query) ==
-                          (source.scheme, source.netloc, unquote(source.path), source.query),
-                      prefix + 'action link must match its registered HTTPS Canvas course source')
-            except (ValueError, TypeError, AttributeError):
-                errors.append(prefix + 'invalid action link URL/source')
+        groups = [c.get('action_links', [])]
+        placeholder = c.get('template_placeholder')
+        if isinstance(placeholder, dict):
+            groups.append(placeholder.get('action_links', []))
+        for links in groups:
+            check(isinstance(links, list), prefix + 'action_links must be an array')
+            paired = isinstance(links, list) and any(isinstance(link, dict) and 'action' in link for link in links)
+            for link in links if isinstance(links, list) else []:
+                if not isinstance(link, dict):
+                    errors.append(prefix + 'invalid action link')
+                    continue
+                check(all(nonempty(link.get(k)) for k in ('label', 'url', 'source_id')), prefix + 'action link label/url/source_id required')
+                if paired:
+                    check(nonempty(link.get('action')), prefix + 'paired action links each need a specific action')
+                sid = link.get('source_id')
+                check(isinstance(sid, str) and sid in c.get('source_ids', []), prefix + 'action link needs a criterion source')
+                try:
+                    target = urlsplit(link.get('url', ''))
+                    source = urlsplit(source_locations.get(sid, ''))
+                    course_path = f"/courses/{m.get('course', {}).get('id')}"
+                    check(target.scheme == 'https' and bool(target.netloc) and not target.username and not target.password
+                          and (target.path == course_path or target.path.startswith(course_path + '/'))
+                          and (target.scheme, target.netloc, unquote(target.path), target.query) ==
+                              (source.scheme, source.netloc, unquote(source.path), source.query),
+                          prefix + 'action link must match its registered HTTPS Canvas course source')
+                except (ValueError, TypeError, AttributeError):
+                    errors.append(prefix + 'invalid action link URL/source')
         if rating in REVISIONS:
             check(state in {'verified', 'not_evidenced'} and nonempty(c.get('action_plan')), prefix + 'revision needs established deficiency and action')
         elif rating == 'Present':

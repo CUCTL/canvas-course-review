@@ -284,6 +284,25 @@ class ContractTests(unittest.TestCase):
                  verification_step='Complete the contact fields.', uncertainty='Pending assignment.')
         self.assertIn('CU 1: intentional template placeholder must not be deferred', self.errors())
 
+    def test_preparation_links_are_distinct_from_revision_destinations(self):
+        self.m['course_type'] = 'master_blueprint'
+        revision_url = 'https://canvas.example.edu/courses/fixture/pages/revision'
+        preparation_url = 'https://canvas.example.edu/courses/fixture/quizzes/7'
+        self.m['sources'][0]['location'] = revision_url
+        self.m['sources'].append({'id': 's2', 'location': preparation_url, 'description': 'Saved quiz draft'})
+        c = next(x for x in self.r['criteria'] if x['id'] == 21)
+        c['source_ids'].append('s2')
+        c['action_links'] = [{'label': 'Revision page', 'url': revision_url, 'source_id': 's1'}]
+        c['template_placeholder'] = {'scope': 'Quiz draft finalization', 'reminder': 'Finalize the saved quiz draft.',
+                                     'action_links': [{'label': 'Syllabus Quiz', 'url': preparation_url, 'source_id': 's2'}]}
+        self.assertEqual([], self.errors())
+        report = v.render(self.m, self.r, (self.root / 'narrative.md').read_text())
+        preparation = report.split('## Instructor preparation reminders')[1].split('## Mechanical grammar')[0]
+        self.assertIn(preparation_url, preparation)
+        self.assertNotIn(revision_url, preparation)
+        c['template_placeholder']['action_links'][0]['source_id'] = 'unknown'
+        self.assertTrue(self.errors())
+
     def test_level_selection_and_default_are_validated(self):
         self.r.update(review_level='api_browser', level_selection='default')
         self.assertEqual([], self.errors())
