@@ -132,6 +132,74 @@ class ContractTests(unittest.TestCase):
         self.assertIn('q1: blocked; method: browser', appendix)
         self.assertIn('Provider access restricted.', appendix)
 
+    def test_canvas_action_links_render_in_table_and_checklist(self):
+        url = 'https://canvas.example.edu/courses/fixture/pages/media%7Cintro'
+        self.m['sources'][0]['location'] = url
+        c = next(x for x in self.r['criteria'] if x['id'] == 21)
+        c['action_links'] = [{'label': 'Introduction [video]', 'url': url, 'source_id': 's1'}]
+        self.assertEqual([], self.errors())
+        report = v.render(self.m, self.r, (self.root / 'narrative.md').read_text())
+        destination = '[Introduction \\[video\\]](' + url + ')'
+        row = next(line for line in report.splitlines() if line.startswith('| 21 |'))
+        self.assertIn('Related Canvas: ' + destination, row)
+        checklist = report.split('## Revision checklist')[1].split('## Mechanical grammar')[0]
+        self.assertIn(destination, checklist)
+        # Equivalent percent-encoding and a section anchor still reference the inspected source.
+        c['action_links'][0]['url'] = url.replace('%7C', '|') + '#captions'
+        self.assertEqual([], self.errors())
+        report = v.render(self.m, self.r, (self.root / 'narrative.md').read_text())
+        self.assertIn(url + '#captions', report)
+
+    def test_action_links_reject_unregistered_or_wrong_course_destinations(self):
+        url = 'https://canvas.example.edu/courses/fixture/pages/media'
+        self.m['sources'][0]['location'] = url
+        c = next(x for x in self.r['criteria'] if x['id'] == 21)
+        valid = {'label': 'Introduction video', 'url': url, 'source_id': 's1'}
+        for changes in ({'source_id': 'unknown'}, {'url': 'javascript:alert(1)'},
+                        {'url': url.replace('/fixture/', '/fixture2/')},
+                        {'url': url.replace('/media', '/guessed')}, {'label': ''},
+                        {'source_id': []}, {'url': None}):
+            with self.subTest(changes=changes):
+                c['action_links'] = [{**valid, **changes}]
+                self.assertTrue(self.errors())
+        # Even a registered source in a similarly named course cannot pass the course boundary.
+        wrong_course = url.replace('/fixture/', '/fixture2/')
+        self.m['sources'][0]['location'] = wrong_course
+        c['action_links'] = [{**valid, 'url': wrong_course}]
+        self.assertTrue(self.errors())
+        for malformed in ('link', [None]):
+            c['action_links'] = malformed
+            self.assertTrue(self.errors())
+        # Existing export/historical records need no invented Canvas destination.
+        c.pop('action_links')
+        self.assertEqual([], self.errors())
+
+    def test_specific_actions_stay_paired_with_their_own_links(self):
+        first = 'https://canvas.example.edu/courses/fixture/pages/intro'
+        second = 'https://canvas.example.edu/courses/fixture/pages/followup'
+        self.m['sources'][0]['location'] = first
+        self.m['sources'].append({'id': 's2', 'location': second, 'description': 'Second affected page'})
+        c = next(x for x in self.r['criteria'] if x['id'] == 21)
+        c['source_ids'].append('s2')
+        c['action_links'] = [
+            {'action': 'Add captions & verify <playback>.', 'label': 'Introduction', 'url': first, 'source_id': 's1'},
+            {'action': 'Correct the transcript.', 'label': 'Follow-up', 'url': second, 'source_id': 's2'},
+        ]
+        self.assertEqual([], self.errors())
+        report = v.render(self.m, self.r, (self.root / 'narrative.md').read_text())
+        row = next(line for line in report.splitlines() if line.startswith('| 21 |'))
+        self.assertIn('<ul><li>Add captions &amp; verify &lt;playback&gt;. — <a href="' + first + '">Introduction</a></li>', row)
+        self.assertIn('<li>Correct the transcript. — <a href="' + second + '">Follow-up</a></li></ul>', row)
+        self.assertNotIn('Related Canvas:', row)
+        checklist = report.split('## Revision checklist')[1].split('## Mechanical grammar')[0]
+        self.assertIn('- CU 21 (Major Revision)\n\n  - Add captions & verify <playback>. — [Introduction](' + first + ')', checklist)
+        self.assertIn('  - Correct the transcript. — [Follow-up](' + second + ')', checklist)
+        for action in ('', None):
+            c['action_links'][1]['action'] = action
+            self.assertTrue(self.errors())
+        c['action_links'][1].pop('action')
+        self.assertTrue(self.errors())
+
     def test_evidence_register_consistency_is_checked(self):
         for filename, obj in [('manifest.json', self.m), ('review.json', self.r)]:
             (self.root / filename).write_text(json.dumps(obj))

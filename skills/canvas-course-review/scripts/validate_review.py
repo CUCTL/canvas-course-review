@@ -3,8 +3,10 @@
 import argparse
 import hashlib
 import json
+from html import escape
 from datetime import datetime
 from pathlib import Path
+from urllib.parse import quote, unquote, urlsplit
 
 IDS = set(range(1, 44)) - {25}
 RATINGS = {'Present', 'Minor Revision', 'Moderate Revision', 'Major Revision', 'N/A'}
@@ -51,6 +53,31 @@ def cell(value):
     return str(value).replace('|', '\\|').replace('\n', '<br>')
 
 
+def action_links(record):
+    """Render reviewer-selected Canvas destinations; never guess from source IDs."""
+    links = []
+    for link in record.get('action_links', []):
+        label = link['label'].replace('\\', '\\\\').replace('[', '\\[').replace(']', '\\]').replace('\n', ' ')
+        url = quote(link['url'], safe=':/?#@!$&*=+%;,~._-')
+        links.append(f'[{label}]({url})')
+    return ' · '.join(links)
+
+
+def action_pairs(record, table=False):
+    """Keep each specific task adjacent to its destination in both report views."""
+    links = record.get('action_links', [])
+    if not links or not all(nonempty(link.get('action')) for link in links):
+        return ''
+    if table:
+        items = []
+        for link in links:
+            url = quote(link['url'], safe=':/?#@!$&*=+%;,~._-')
+            items.append(f'<li>{escape(link["action"])} — '
+                         f'<a href="{escape(url, quote=True)}">{escape(link["label"])}</a></li>')
+        return '<ul>' + ''.join(items) + '</ul>'
+    return '\n'.join(f'  - {link["action"]} — {action_links({"action_links": [link]})}' for link in links)
+
+
 def render(manifest, review, narrative):
     course = manifest['course']
     lines = [f"# {course['name']} — CUOCDR review", '', f"Status: **{review['status']}**",
@@ -90,13 +117,28 @@ def render(manifest, review, narrative):
             action = c['action_plan'] or c['verification_step'] or '—'
             if c['uncertainty']:
                 action += f" Uncertainty: {c['uncertainty']}"
+            related = action_links(c)
+            paired = action_pairs(c, table=True)
+            if paired:
+                action = paired + (f" Uncertainty: {c['uncertainty']}" if c['uncertainty'] else '')
+            elif related:
+                action += f'\nRelated Canvas: {related}'
             lines.append('| ' + ' | '.join(cell(v) for v in (cid, wording, label, evidence, action)) + ' |')
     lines += ['', '## Revision checklist', '']
     revisions = [c for c in review['criteria'] if c['rating'] in PRIORITIES | {'Minor Revision'}]
     accessibility_compliance = {1, 7, 8, 11, 14, 15, 16, 17, 18, 19, 20, 21, 22, 27}
     severity = {'Major Revision': 0, 'Moderate Revision': 1, 'Minor Revision': 2}
     revisions.sort(key=lambda c: (c['id'] not in accessibility_compliance, severity[c['rating']], c['id']))
-    lines += [f"- CU {c['id']} ({c['rating']}): {c['action_plan']}" for c in revisions] or ['No revision findings recorded; consult status and limitations.']
+    for c in revisions:
+        related = action_links(c)
+        paired = action_pairs(c)
+        if paired:
+            lines += [f"- CU {c['id']} ({c['rating']})", '', paired, '']
+        else:
+            lines.append(f"- CU {c['id']} ({c['rating']}): {c['action_plan']}" +
+                         (f' — {related}' if related else ''))
+    if not revisions:
+        lines.append('No revision findings recorded; consult status and limitations.')
     lines += ['', '## Mechanical grammar and spelling', '']
     lines += [f"- {g['issue']} Suggested fix: {g['suggested_fix']} [Evidence register](evidence-register.md)" for g in review['grammar']] or [
         'No confirmed mechanical issues found.' if review['stages']['grammar'] == 'completed' else 'Mechanical review incomplete; see limitations.']
@@ -165,10 +207,12 @@ def validate(root, m, r):
     except (KeyError, ValueError, TypeError, AttributeError):
         errors.append('invalid snapshot_at')
     source_ids = set()
+    source_locations = {}
     for s in m.get('sources', []):
         check(all(nonempty(s.get(k)) for k in ('id', 'location', 'description')), 'invalid source record')
         check(s.get('id') not in source_ids, 'duplicate source id')
         source_ids.add(s.get('id'))
+        source_locations[s.get('id')] = s.get('location')
         if 'artifact' in s:
             try:
                 p = local_file(root, s['artifact'])
@@ -264,6 +308,29 @@ def validate(root, m, r):
         check(isinstance(c.get('source_ids'), list) and bool(c.get('source_ids')) and set(c.get('source_ids', [])) <= source_ids, prefix + 'missing/unresolved sources')
         check(all(isinstance(c.get(k), str) for k in ('action_plan', 'verification_step', 'uncertainty')), prefix + 'text fields required')
         check(type(c.get('deferred')) is bool, prefix + 'deferred boolean required')
+        links = c.get('action_links', [])
+        check(isinstance(links, list), prefix + 'action_links must be an array')
+        paired = isinstance(links, list) and any(isinstance(link, dict) and 'action' in link for link in links)
+        for link in links if isinstance(links, list) else []:
+            if not isinstance(link, dict):
+                errors.append(prefix + 'invalid action link')
+                continue
+            check(all(nonempty(link.get(k)) for k in ('label', 'url', 'source_id')), prefix + 'action link label/url/source_id required')
+            if paired:
+                check(nonempty(link.get('action')), prefix + 'paired action links each need a specific action')
+            sid = link.get('source_id')
+            check(isinstance(sid, str) and sid in c.get('source_ids', []), prefix + 'action link needs a criterion source')
+            try:
+                target = urlsplit(link.get('url', ''))
+                source = urlsplit(source_locations.get(sid, ''))
+                course_path = f"/courses/{m.get('course', {}).get('id')}"
+                check(target.scheme == 'https' and bool(target.netloc) and not target.username and not target.password
+                      and (target.path == course_path or target.path.startswith(course_path + '/'))
+                      and (target.scheme, target.netloc, unquote(target.path), target.query) ==
+                          (source.scheme, source.netloc, unquote(source.path), source.query),
+                      prefix + 'action link must match its registered HTTPS Canvas course source')
+            except (ValueError, TypeError, AttributeError):
+                errors.append(prefix + 'invalid action link URL/source')
         if rating in REVISIONS:
             check(state in {'verified', 'not_evidenced'} and nonempty(c.get('action_plan')), prefix + 'revision needs established deficiency and action')
         elif rating == 'Present':
