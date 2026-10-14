@@ -16,6 +16,8 @@ Required fields:
 - inventory: array of objects with unique `id`, nonempty `location`, `view`, `publication_state`, and `status` (`inspected`, `blocked`, `excluded`). For inspected entries, `source_ids` must reference at least one source. Blocked/excluded entries require `reason`. Include out-of-scope entries and unlinked resources when they affect coverage; unavailable publication metadata can be recorded as `unknown`.
 - limitations: array of nonempty strings, possibly empty.
 
+Optional `manifest.course_type` is `master_blueprint` or `course_offering`. It records confirmed template purpose, not merely unpublished status. Historical manifests without it remain readable.
+
 ## review.json
 
 Required fields:
@@ -27,7 +29,7 @@ Required fields:
 - criteria: array of all 42 records for completed/partial reports, with no duplicate or invented IDs. A failed run may retain a subset, but cannot render a successful report.
 - grammar: array of objects with nonempty `source_id`, `issue`, and `suggested_fix`. An empty list means no confirmed mechanical issues only when that stage completed; partial stages must describe limits.
 
-Each criterion record has `id` (integer), `rating` (allowed label or null), `evidence_status` (policy enum), `source_ids` (source IDs), `evidence` (concise text), `action_plan`, `verification_step`, `uncertainty`, and `deferred` (boolean). Empty strings are permitted for action/verification/uncertainty only where irrelevant. N/A uses not_applicable; null uses not_verified. Present uses verified. Revision findings use verified or scoped not_evidenced. All records need sources describing observation or search scope, including blocked checks. Null records need a verification step and uncertainty; revision records need an action plan. Explain N/A in evidence. A deferred record is null and explains the placeholder and completion step.
+Each criterion record has `id` (integer), `rating` (allowed label or null), `evidence_status` (policy enum), `source_ids` (source IDs), `evidence` (concise text), `action_plan`, `verification_step`, `uncertainty`, and `deferred` (boolean). Empty strings are permitted for action/verification/uncertainty only where irrelevant. N/A uses not_applicable; null uses not_verified. Present uses verified. Revision findings use verified or scoped not_evidenced. All records need sources describing observation or search scope, including blocked checks. Null records need a verification step and uncertainty; revision records need an action plan. Explain N/A in evidence. A legacy deferred record is null and explains the placeholder and completion step. For new master/blueprint reviews, intentional instructor placeholders instead use Present, verified, deferred=false, and optional `template_placeholder: {"scope": "Instructor welcome page awaiting personalization", "reminder": "Instructor: add your biography and contact details and publish this page before the course opens."}`. Both strings are nonempty and require manifest.course_type=master_blueprint and registered evidence. Present verifies the scaffold, not completion of instructor content. If the same criterion has an unrelated observed deficiency or evidence gap, preserve that revision/null rating and keep the reminder separate; the exception does not override the rest of the criterion. See [template guidance](template-placeholders.md).
 
 For completed/partial reports, `narrative` is an object with:
 
@@ -38,6 +40,8 @@ For completed/partial reports, `narrative` is an object with:
 - closing_excerpt: verbatim excerpt from the closing paragraph.
 
 The first nonblank line of narrative.md starts `Subject:` and includes the exact course name. Count all whitespace-separated words in the file, including subject/greeting/sign-off. Maximum 600. For partial reports the draft explicitly says `partial review`. The helper validates excerpts but cannot establish their meaning, theme grouping, priority, faculty tone, supportive closing, or substantive coverage. Check these manually against the ten narrative requirements.
+
+Template reminders appear beside the criterion’s action/verification text and in a separate instructor preparation checklist, including available registered Canvas action links. They are not revision findings and do not enter Moderate/Major narrative coverage solely because instructor completion is pending. Preserve them in end-user PDF exports alongside substantive actions and limitations. Historical reports render unchanged when the optional fields are absent.
 
 ## Related Canvas action links
 

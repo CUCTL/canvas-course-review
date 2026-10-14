@@ -245,6 +245,45 @@ class ContractTests(unittest.TestCase):
                 self.assertNotIn('Independent blind assessment completed', report)
         self.assertIn('Independent blind assessment was outside', report)
 
+    def test_master_placeholder_is_present_with_preparation_reminder(self):
+        self.m['course_type'] = 'master_blueprint'
+        c = next(x for x in self.r['criteria'] if x['id'] == 30)
+        c.update(evidence='Instructor welcome template explicitly requests a biography before publication.',
+                 template_placeholder={'scope': 'Instructor biography and welcome page',
+                                       'reminder': 'Instructor: add your biography and publish the welcome page before opening.'})
+        self.assertEqual([], self.errors())
+        report = v.render(self.m, self.r, (self.root / 'narrative.md').read_text())
+        row = next(line for line in report.splitlines() if line.startswith('| 30 |'))
+        self.assertIn('| Present |', row)
+        self.assertIn(c['template_placeholder']['reminder'], row)
+        reminders = report.split('## Instructor preparation reminders')[1].split('## Mechanical grammar')[0]
+        self.assertIn('CU 30:', reminders)
+        revisions = report.split('## Revision checklist')[1].split('## Instructor preparation reminders')[0]
+        self.assertNotIn('CU 30', revisions)
+
+    def test_master_placeholder_does_not_override_other_deficiencies(self):
+        self.m['course_type'] = 'master_blueprint'
+        c = next(x for x in self.r['criteria'] if x['id'] == 21)
+        c['template_placeholder'] = {'scope': 'Personalized welcome introduction',
+                                     'reminder': 'Instructor: personalize the welcome introduction before opening.'}
+        self.assertEqual([], self.errors())
+        report = v.render(self.m, self.r, (self.root / 'narrative.md').read_text())
+        self.assertIn('CU 21 (Major Revision)', report)
+        self.assertIn(c['template_placeholder']['reminder'], report)
+
+    def test_template_exception_requires_confirmed_scope_and_reminder(self):
+        c = self.r['criteria'][0]
+        c['template_placeholder'] = {'scope': 'Contact fields', 'reminder': 'Complete contact fields before opening.'}
+        self.assertIn('CU 1: template placeholder requires master_blueprint course type', self.errors())
+        self.m['course_type'] = 'master_blueprint'
+        self.assertEqual([], self.errors())
+        c['template_placeholder']['reminder'] = ''
+        self.assertIn('CU 1: template placeholder needs scope and instructor reminder', self.errors())
+        c['template_placeholder']['reminder'] = 'Complete contact fields before opening.'
+        c.update(rating=None, evidence_status='not_verified', deferred=True,
+                 verification_step='Complete the contact fields.', uncertainty='Pending assignment.')
+        self.assertIn('CU 1: intentional template placeholder must not be deferred', self.errors())
+
     def test_level_selection_and_default_are_validated(self):
         self.r.update(review_level='api_browser', level_selection='default')
         self.assertEqual([], self.errors())

@@ -53,3 +53,5 @@ Faculty reports include the narrative, full rubric, and a revision checklist. De
 Level 3 includes an independent blind agent assessment using saved raw evidence, followed by reconciliation and a report-policy audit. Browser checks are not repeated by default. Confirmation records stay with the ignored course-review artifacts; the reusable workflow is included in the shared skill.
 
 Scope is course design only, even for published/running courses. Interaction and feedback are assessed as documented plans and designed opportunities. Actual teaching performance, feedback execution, student activity/outcomes, and accommodation delivery are outside scope; next-term teaching tips remain optional.
+
+Master/blueprint reviews count intentional instructor-completion scaffolds as Present, with explicit completion/publication reminders in the report. Unpublished status alone does not establish this exception; core content and accessibility requirements still apply. See [template placeholder guidance](skills/canvas-course-review/references/template-placeholders.md).

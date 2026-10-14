@@ -123,6 +123,9 @@ def render(manifest, review, narrative):
                 action = paired + (f" Uncertainty: {c['uncertainty']}" if c['uncertainty'] else '')
             elif related:
                 action += f'\nRelated Canvas: {related}'
+            placeholder = c.get('template_placeholder')
+            if placeholder:
+                action += f'\nInstructor preparation reminder: {placeholder["reminder"]}'
             lines.append('| ' + ' | '.join(cell(v) for v in (cid, wording, label, evidence, action)) + ' |')
     lines += ['', '## Revision checklist', '']
     revisions = [c for c in review['criteria'] if c['rating'] in PRIORITIES | {'Minor Revision'}]
@@ -139,6 +142,14 @@ def render(manifest, review, narrative):
                          (f' — {related}' if related else ''))
     if not revisions:
         lines.append('No revision findings recorded; consult status and limitations.')
+    placeholders = [c for c in review['criteria'] if c.get('template_placeholder')]
+    if placeholders:
+        lines += ['', '## Instructor preparation reminders', '',
+                  'Intentional master/blueprint scaffolds count as Present when the remaining criterion requirements are met. These reminders identify instructor preparation, not completed personalization or verified learner visibility.', '']
+        for c in placeholders:
+            related = action_links(c)
+            lines.append(f'- CU {c["id"]}: {c["template_placeholder"]["reminder"]}' +
+                         (f' — {related}' if related else ''))
     lines += ['', '## Mechanical grammar and spelling', '']
     lines += [f"- {g['issue']} Suggested fix: {g['suggested_fix']} [Evidence register](evidence-register.md)" for g in review['grammar']] or [
         'No confirmed mechanical issues found.' if review['stages']['grammar'] == 'completed' else 'Mechanical review incomplete; see limitations.']
@@ -200,6 +211,8 @@ def validate(root, m, r):
         check(isinstance(obj.get('limitations'), list) and all(nonempty(x) for x in obj.get('limitations', [])), f'{label}: invalid limitations')
     check(all(nonempty(m.get('course', {}).get(k)) for k in ('id', 'name')), 'course id/name required')
     check(m.get('mode') in {'pre_launch', 'published_view', 'supplied_export'}, 'invalid mode')
+    if 'course_type' in m:
+        check(m.get('course_type') in ('master_blueprint', 'course_offering'), 'invalid course type')
     check(nonempty(m.get('scope')), 'scope required')
     check(m.get('rubric_version') == 'CUOCDR v0.9', 'invalid rubric version')
     try:
@@ -341,6 +354,13 @@ def validate(root, m, r):
             check(state == 'not_verified' and nonempty(c.get('verification_step')) and nonempty(c.get('uncertainty')), prefix + 'pending needs verification and uncertainty')
         if c.get('deferred'):
             check(rating is None, prefix + 'deferred cannot be rated')
+        if 'template_placeholder' in c:
+            placeholder = c['template_placeholder']
+            check(m.get('course_type') == 'master_blueprint', prefix + 'template placeholder requires master_blueprint course type')
+            check(isinstance(placeholder, dict) and all(nonempty(placeholder.get(k)) for k in ('scope', 'reminder')),
+                  prefix + 'template placeholder needs scope and instructor reminder')
+            check(c.get('deferred') is False, prefix + 'intentional template placeholder must not be deferred')
+            check(rating != 'N/A', prefix + 'template placeholder is not a reason for N/A')
     check(isinstance(r.get('grammar'), list), 'grammar array required')
     for g in r.get('grammar', []):
         check(g.get('source_id') in source_ids and all(nonempty(g.get(k)) for k in ('issue', 'suggested_fix')), 'invalid grammar record')

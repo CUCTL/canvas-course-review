@@ -1,6 +1,6 @@
 # Review policy
 
-Version 1.4, October 13, 2026. CUOCDR v0.9 is the rating authority. The preserved rubric has 42 items numbered 1–24 and 26–43; do not add item 25. Preserve category order and criterion wording.
+Version 1.5, October 14, 2026. CUOCDR v0.9 is the rating authority. The preserved rubric has 42 items numbered 1–24 and 26–43; do not add item 25. Preserve category order and criterion wording.
 
 ## Ratings and evidence
 
@@ -12,7 +12,7 @@ Evidence states:
 - not_verified: access, sampling, missing policy, or technical limits prevent a conclusion; leave rating null.
 - not_applicable: a legitimate N/A, with rationale.
 
-Use a deferred flag for identified blueprint/pre-launch instructor/contact/introduction placeholders; leave the rating null and record when/who should complete them. This exception does not exempt other design requirements or excuse missing personalization once an instructor is assigned.
+For a confirmed master/blueprint template, treat intentional instructor-completion placeholders and intentionally unpublished preparation pages as **Present**, with verified evidence of the template scaffold, deferred=false, and a concrete instructor completion reminder. Present here means the template design includes the intended provision, not that instructor-specific content or publication is already complete. Record manifest.course_type=master_blueprint and criterion.template_placeholder with scope and reminder; see [template placeholder guidance](template-placeholders.md). Do not automatically pass an entire criterion if unrelated requirements are missing, infer intent from unpublished status alone, or excuse missing core content/accessibility. In an actual course offering, review readiness against its stated scope; the template exception does not carry over automatically. The legacy deferred flag remains readable for historical reports; do not use it for intentional template placeholders in new reviews.
 
 Source time bands are guidance: Minor <20 minutes, Moderate <40 minutes, Major 60+ minutes. They overlap and leave 40–59 minutes unclear. Do not invent a numeric classification rule; explain ambiguous choices for instructor judgment.
 
@@ -42,4 +42,4 @@ Offer three levels when the user has not selected one: API content + narrative (
 
 Review planned and authored course design, not course delivery. Interaction criteria concern documented expectations, planned substantive contact, communication guidance, and opportunities designed into the course. Feedback criteria concern stated policies, assessment criteria, self-review opportunities, and designed feedback mechanisms. Do not evaluate actual instructor responsiveness, feedback execution/quality, student engagement/achievement, attendance, or actual accommodation implementation. Do not turn empty activity histories, unavailable real-learner sessions, or absent posted grades into design deficiencies.
 
-Configured dates, navigation/visibility, media playback, document accessibility, quiz instructions and preview controls may be checked as design evidence. Actual enrolled-learner testing and delivery outcomes are outside this skill; their absence is a scope boundary, not unfinished design review. Missing documented design intent can remain pending, with a request to clarify the plan. Keep instructor personalization as preparation/deferred content where policy permits. Practical teaching tips are optional future suggestions and never evidence that delivery failed.
+Configured dates, navigation/visibility, media playback, document accessibility, quiz instructions and preview controls may be checked as design evidence. Actual enrolled-learner testing and delivery outcomes are outside this skill; their absence is a scope boundary, not unfinished design review. Missing documented design intent can remain pending, with a request to clarify the plan. In master/blueprint templates, treat intentional instructor personalization scaffolds as Present with completion reminders, as described above. Practical teaching tips are optional future suggestions and never evidence that delivery failed.
