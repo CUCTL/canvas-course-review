@@ -14,6 +14,14 @@ Read and parse the finalized review.md and reconcile its findings with review.js
 
 Keep the complete draft at **600 words maximum**, including subject, greeting and closing. Write connected prose without rubric-by-rubric headings, priority labels, or a remedial checklist. Use an appropriate greeting when helpful; the opening still starts with thanks and evidenced strengths. Prefer a few manageable, specific changes over a dense recitation of all minor findings, but never omit a Moderate/Major item to shorten the draft.
 
+## Plain language
+
+Write the way an institutional colleague would explain the findings in a normal conversation. Name the actual task and course location instead of compressing them into abstract labels. Prefer familiar verbs such as add, check, explain, revise, and publish. Avoid forced compound modifiers, strings of adjectives, and phrases that make ordinary work sound more academic or technical than it is. Institutional voice does not mean formal or stuffy language.
+
+Translate technical evidence into its practical meaning. For example, write “the videos have captions, but we still need to check their accuracy” instead of “caption tracks remain unverified”; “ask CTL to confirm the university’s requirements for accessible tables” instead of “obtain table guidance”; “add instructions for filing a complaint” instead of “add a grievance-filing route”; and “complete these details before students enter the course” instead of “address offering-preparation reminders.” Explain that a screen reader needs to recognize a table’s column headings rather than asking faculty to make “grading-table headers programmatic.” Technical terms needed to carry out a specific task belong with a brief explanation or in the detailed report, not in an unexplained list in the email.
+
+During the final read, ask whether a faculty member unfamiliar with the review process could understand each sentence and know what to do next. Rewrite any sentence that requires decoding. Keep the evidence, uncertainty, and recommendation intact while simplifying the wording; plain language must not weaken the finding.
+
 ## Priority, specificity and scope
 
 Order themes implicitly: **accessibility/compliance**, then **student learning impact**, then **reviewer emphasis**. Within that ordering, begin with readily achievable changes when evidence supports their usefulness; do not let easy cosmetic edits displace an accessibility barrier or a more consequential learning issue. Do not promise effort estimates or improved performance without evidence. For each theme, explain the practical impact and at least one concrete next step; each mapped Moderate/Major finding must retain its own actionable treatment.
