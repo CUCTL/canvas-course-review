@@ -43,9 +43,25 @@ The first nonblank line of narrative.md starts `Subject:` and includes the exact
 
 Template reminders appear beside the criterion’s action/verification text and in a separate instructor preparation checklist, including available registered Canvas action links. They are not revision findings and do not enter Moderate/Major narrative coverage solely because instructor completion is pending. Preserve them in end-user PDF exports alongside substantive actions and limitations. Historical reports render unchanged when the optional fields are absent.
 
+## Plain language for actions and checklists
+
+Write every action as a short, direct instruction that a faculty member can understand without knowing the review process. Begin with a familiar verb, name what needs to change, and identify where to do it. Split a long recommendation into separate tasks when that makes it easier to follow. Keep each task beside the correct Canvas link.
+
+This applies to action_plan, verification_step, action_links[].action and labels, template_placeholder.reminder and its links, all rendered checklists, and PDF exports. Use the same clear wording wherever the task appears. Avoid unexplained technical terms, abstract labels, forced compound phrases and unnecessary adjectives. Include a brief reason when it helps the reader carry out the task. If specialist help is needed, say who to ask and what to ask them to do; explain a technical term only when the reader needs it to complete the task.
+
+Examples:
+
+- “Add the university’s instructions for filing a complaint to the syllabus,” rather than “Add a grievance-filing route.”
+- “Ask CTL to format the grading table so screen readers can recognize its column headings,” rather than “Make grading-table headers programmatic.”
+- “Check that the video captions match what is said,” rather than “Verify caption-track accuracy.”
+- “State when the first discussion post and replies are due,” rather than “Clarify the initial-post/peer-reply cadence.”
+- “Add your introduction and publish it before students enter the course,” rather than “Complete offering-preparation requirements.”
+
+Simplify the language without changing the task, the rating, the evidence limits, or whether something is a confirmed problem or still needs checking. Preserve the exact source rubric and keep detailed technical evidence in the supporting register. Manually read every action as an end user before delivery: the reader should know what to do, where to do it, and when help is needed.
+
 ## Related Canvas action links
 
-Each criterion may include `action_links`: an array of `{ "action": "Restore the safe sandbox-testing procedure.", "label": "1.3 Sandbox", "url": "https://canvas.example.edu/courses/123/pages/sandbox", "source_id": "page-sandbox" }`. The source ID must occur in that criterion’s `source_ids`, and its registered source location must match the HTTPS URL (encoded page names and optional fragments are supported). Use the exact reviewed course, not a different course, guessed resource, or external how-to article. Register any newly inspected destination before linking it.
+Each criterion may include `action_links`: an array of `{ "action": "Add the missing steps for testing work in the Canvas sandbox.", "label": "1.3 Sandbox", "url": "https://canvas.example.edu/courses/123/pages/sandbox", "source_id": "page-sandbox" }`. The source ID must occur in that criterion’s `source_ids`, and its registered source location must match the HTTPS URL (encoded page names and optional fragments are supported). Use the exact reviewed course, not a different course, guessed resource, or external how-to article. Register any newly inspected destination before linking it.
 
 For new live-course reports, supply at least one relevant destination for each revision/actionable verification step when available; use more than one only when needed to locate separate work. For new reports, give each link an `action` containing the specific task at that destination. Split multi-location recommendations into action/link pairs; avoid a shared paragraph followed by a detached group of links. The renderer displays the pairs as a list in the action/verification table cell and a nested list under each revision criterion. Each pair must stand on its own and, together, retain every material step from the action plan. If any link has `action`, all links on that criterion must have a nonempty action. Legacy entries without `action` retain their previous rendering. Use concise labels naming the page, activity, settings section, or question bank. A link locates the work; it does not prove learner access or authorize editing. Exports and unavailable destinations may omit links with a location/limitation in the action text. Historical reports without this optional field remain valid and render unchanged.
 
