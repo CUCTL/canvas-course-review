@@ -30,6 +30,6 @@ CU 1 and 30 are the most direct cases. The other criteria qualify only when the 
 - No blanket Present rating for every criterion in a master course. Objectives/alignment, assessment criteria, core readings/activities, Christian integration, and required institutional policies remain substantive design checks.
 - Inspect accessibility of existing template content. Missing caption evidence, inaccessible documents, or unknown tool compliance remain deficiencies or verification gaps; future personalization does not prove accessibility.
 - Preserve configured publication states. A planned unpublished instructor page is Present as a template provision, not verified as learner-visible. Accidental unpublished core content or contradictory availability needs separate assessment.
-- Keep preparation reminders separate from the revision checklist. If another part of the same criterion needs revision, retain that rating and its narrative coverage, alongside the instructor reminder.
+- Keep preparation reminders separate from revision actions. If another part of the same criterion needs revision, retain that rating and its narrative coverage, alongside the instructor reminder.
 - In actual offerings, assess whether required pre-launch personalization has been completed under the requested scope. Do not judge subsequent teaching execution or learner outcomes.
 - Apply this same policy in level-3 independent confirmation. The reviewer must see raw template instructions, not merely the primary reviewer’s assertion that a placeholder is intentional.

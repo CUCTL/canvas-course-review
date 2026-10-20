@@ -60,6 +60,48 @@ class ContractTests(unittest.TestCase):
     def errors(self):
         return v.validate(self.root, self.m, self.r)[0]
 
+    def test_named_report_is_safe_stable_and_matches_canonical_output(self):
+        self.m['course'] = {'id': '28805', 'name': 'A different course title',
+                            'course_code': 'MASTER_BTHT_3023_ONL / Section A'}
+        # Keep the fixture narrative's required course-name match.
+        self.m['course']['name'] = 'Fixture Course'
+        stem = v.report_stem(self.m)
+        self.assertEqual('28805-MASTER_BTHT_3023_ONL_Section_A_review_1791900000', stem)
+        self.m['snapshot_at'] = '2026-10-13T10:00:00-04:00'
+        self.assertEqual(stem, v.report_stem(self.m))
+        self.m['follow_up'] = {'updated_at': '2026-10-14T14:00:00+00:00'}
+        self.assertNotEqual(stem, v.report_stem(self.m))
+        (self.root / 'manifest.json').write_text(json.dumps(self.m))
+        (self.root / 'review.json').write_text(json.dumps(self.r))
+        command = [sys.executable, str(SCRIPT), str(self.root)]
+        result = subprocess.run(command + ['--render'], capture_output=True, text=True)
+        self.assertEqual(0, result.returncode, result.stdout)
+        named = self.root / (v.report_stem(self.m) + '.md')
+        self.assertEqual((self.root / 'review.md').read_bytes(), named.read_bytes())
+        named.write_text('outdated copy')
+        result = subprocess.run(command, capture_output=True, text=True)
+        self.assertNotEqual(0, result.returncode)
+        self.assertIn(named.name, result.stdout)
+
+    def test_conversational_overview_and_navigation_preserve_coverage(self):
+        narrative = (self.root / 'narrative.md').read_text().split('\n\n', 1)[1]
+        narrative = narrative.replace('For accessible media,', '1. **Accessible media.**')
+        narrative = narrative.replace('introduction video.', 'introduction video. [CU 21](#cu-21)', 1)
+        self.r['narrative']['format'] = 'report_overview'
+        self.r['narrative']['coverage'][0]['passage'] = '1. **Accessible media.** add captions to the introduction video.'
+        (self.root / 'narrative.md').write_text(narrative)
+        self.assertEqual([], self.errors())
+        report = v.render(self.m, self.r, narrative)
+        self.assertIn(narrative.strip(), report)
+        self.assertIn('[CU 21](#cu-21)', report)
+        self.assertIn('<a id="cu-21"></a>', report)
+        self.assertLess(report.index('## Faculty overview'), report.index('## Detailed design findings'))
+        self.assertNotIn('Subject:', report)
+        self.assertNotIn('[ ]', report)
+        self.assertNotIn('## Revision checklist', report)
+        self.r['narrative']['format'] = 'unsupported'
+        self.assertIn('invalid narrative format', self.errors())
+
     def test_file_scope_contract_and_rendering(self):
         self.m['file_reviews'] = [{'source_id': 's1', 'file_id': '8', 'name': 'reading.pdf', 'format': '.pdf',
                                   'role': 'instructional_document', 'content_check_required': True,
@@ -99,40 +141,44 @@ class ContractTests(unittest.TestCase):
             return subprocess.run([sys.executable, str(SCRIPT), str(self.root), *args], capture_output=True, text=True)
         self.assertEqual(0, run('--render').returncode)
         report = (self.root / 'review.md').read_text()
-        self.assertIn('Faculty-facing narrative draft', report)
+        self.assertIn('Faculty overview', report)
         self.assertNotIn('## Source register', report)
         self.assertNotIn('## Coverage inventory', report)
         self.assertNotIn('sources: s1', report)
         appendix = (self.root / 'evidence-register.md').read_text()
         self.assertIn('s1: source.html', appendix)
         self.assertIn('### Criterion 21', appendix)
-        checklist = report.split('## Revision checklist')[1].split('## Mechanical grammar')[0]
-        self.assertIn('CU 21 (Major Revision)', checklist)
-        self.assertNotIn('CU 1 (Present)', checklist)
-        self.assertLess(report.index('Review note:'), report.index('## Faculty-facing narrative draft'))
-        self.assertLess(report.index('## Faculty-facing narrative draft'), report.index('## 1. COURSE INFORMATION'))
+        self.assertNotIn('## Revision checklist', report)
+        self.assertNotIn('Subject:', report)
+        self.assertIn('| 21 |', report)
+        self.assertLess(report.index('Review note:'), report.index('## Faculty overview'))
+        self.assertLess(report.index('## Faculty overview'), report.index('## 1. COURSE INFORMATION'))
         self.assertLess(report.index('## Mechanical grammar and spelling'), report.index('## Scope and limitations'))
-        self.assertEqual(1, report.count('## Faculty-facing narrative draft'))
+        self.assertEqual(1, report.count('## Faculty overview'))
         self.assertEqual(42, sum(line.startswith('| ') and line.split('|')[1].strip().isdigit() for line in report.splitlines()))
         self.assertEqual(0, run().returncode)
         (self.root / 'review.md').write_text(report + 'tampered')
         self.assertNotEqual(0, run().returncode)
 
-    def test_revision_checklist_prioritizes_accessibility_and_omits_passes(self):
+    def test_table_actions_are_complete_without_duplicate_checklist(self):
         for cid, rating in [(20, 'Major Revision'), (12, 'Moderate Revision'), (17, 'Minor Revision')]:
             c = next(x for x in self.r['criteria'] if x['id'] == cid)
             c.update(rating=rating, action_plan=f'Repair criterion {cid}.')
         report = v.render(self.m, self.r, (self.root / 'narrative.md').read_text())
-        checklist = report.split('## Revision checklist')[1].split('## Mechanical grammar')[0]
-        self.assertLess(checklist.index('CU 20'), checklist.index('CU 17'))
-        self.assertLess(checklist.index('CU 17'), checklist.index('CU 12'))
-        self.assertNotIn('CU 1 (Present)', checklist)
+        self.assertNotIn('## Revision checklist', report)
+        self.assertNotIn('[ ]', report)
+        for cid in (20, 12, 17):
+            row = next(line for line in report.splitlines() if line.startswith(f'| {cid} |'))
+            self.assertIn(f'Repair criterion {cid}.', row)
+            self.assertEqual(1, report.count(f'Repair criterion {cid}.'))
+        self.assertEqual(42, sum(line.startswith('| ') and line.split('|')[1].strip().isdigit()
+                                 for line in report.splitlines()))
         appendix = v.render_evidence(self.m, self.r, {'checks': [{'id': 'q1', 'status': 'blocked',
                     'verification_method': 'browser', 'verification_scope': 'Provider access restricted.', 'source_ids': ['s1']}]})
         self.assertIn('q1: blocked; method: browser', appendix)
         self.assertIn('Provider access restricted.', appendix)
 
-    def test_canvas_action_links_render_in_table_and_checklist(self):
+    def test_canvas_action_links_render_once_in_table(self):
         url = 'https://canvas.example.edu/courses/fixture/pages/media%7Cintro'
         self.m['sources'][0]['location'] = url
         c = next(x for x in self.r['criteria'] if x['id'] == 21)
@@ -142,8 +188,7 @@ class ContractTests(unittest.TestCase):
         destination = '[Introduction \\[video\\]](' + url + ')'
         row = next(line for line in report.splitlines() if line.startswith('| 21 |'))
         self.assertIn('Related Canvas: ' + destination, row)
-        checklist = report.split('## Revision checklist')[1].split('## Mechanical grammar')[0]
-        self.assertIn(destination, checklist)
+        self.assertEqual(1, report.count(destination))
         # Equivalent percent-encoding and a section anchor still reference the inspected source.
         c['action_links'][0]['url'] = url.replace('%7C', '|') + '#captions'
         self.assertEqual([], self.errors())
@@ -191,9 +236,8 @@ class ContractTests(unittest.TestCase):
         self.assertIn('<ul><li>Add captions &amp; verify &lt;playback&gt;. — <a href="' + first + '">Introduction</a></li>', row)
         self.assertIn('<li>Correct the transcript. — <a href="' + second + '">Follow-up</a></li></ul>', row)
         self.assertNotIn('Related Canvas:', row)
-        checklist = report.split('## Revision checklist')[1].split('## Mechanical grammar')[0]
-        self.assertIn('- CU 21 (Major Revision)\n\n  - Add captions & verify <playback>. — [Introduction](' + first + ')', checklist)
-        self.assertIn('  - Correct the transcript. — [Follow-up](' + second + ')', checklist)
+        self.assertEqual(1, report.count('Add captions &amp; verify &lt;playback&gt;.'))
+        self.assertEqual(1, report.count('Correct the transcript.'))
         for action in ('', None):
             c['action_links'][1]['action'] = action
             self.assertTrue(self.errors())
@@ -258,8 +302,7 @@ class ContractTests(unittest.TestCase):
         self.assertIn(c['template_placeholder']['reminder'], row)
         reminders = report.split('## Instructor preparation reminders')[1].split('## Mechanical grammar')[0]
         self.assertIn('CU 30:', reminders)
-        revisions = report.split('## Revision checklist')[1].split('## Instructor preparation reminders')[0]
-        self.assertNotIn('CU 30', revisions)
+        self.assertNotIn('## Revision checklist', report)
 
     def test_master_placeholder_does_not_override_other_deficiencies(self):
         self.m['course_type'] = 'master_blueprint'
@@ -268,7 +311,8 @@ class ContractTests(unittest.TestCase):
                                      'reminder': 'Instructor: personalize the welcome introduction before opening.'}
         self.assertEqual([], self.errors())
         report = v.render(self.m, self.r, (self.root / 'narrative.md').read_text())
-        self.assertIn('CU 21 (Major Revision)', report)
+        row = next(line for line in report.splitlines() if line.startswith('| 21 |'))
+        self.assertIn('| Major Revision |', row)
         self.assertIn(c['template_placeholder']['reminder'], report)
 
     def test_template_exception_requires_confirmed_scope_and_reminder(self):
@@ -394,7 +438,7 @@ class ContractTests(unittest.TestCase):
         self.r.update(status='failed', criteria=[], narrative=None)
         self.r['stages'].update(design='failed', grammar='not_started', narrative='not_started')
         self.assertEqual([], self.errors())
-        self.assertNotIn('Faculty-facing narrative draft', v.render(self.m, self.r, ''))
+        self.assertNotIn('Faculty overview', v.render(self.m, self.r, ''))
 
     def test_rubric_ids_match_preserved_authority(self):
         self.assertEqual(v.IDS, {i for _, items in v.rubric() for i, _ in items})

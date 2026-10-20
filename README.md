@@ -8,6 +8,8 @@ The skill reviews course design without modifying Canvas or reading student grad
 
 The visible, shareable skill folder is at [skills/canvas-course-review](skills/canvas-course-review/SKILL.md). Invoke `$canvas-course-review` with a course URL/ID or an export and the desired scope. Pre-launch scope is the default. When no review level is specified, the skill asks the user to choose and waits for an explicit answer. Level 2 is recommended; no level is automatically selected. For use in other projects, symlink that folder into `~/.codex/skills/canvas-course-review`; keep this checkout as the maintained source. A repository-local symlink under `.agents/skills/` preserves automatic discovery without duplicating the files.
 
+Each new review first checks the [GitHub source](https://github.com/yehaisong/canvas-course-review) for skill differences using `scripts/check_updates.py`. The check uses a temporary Git repository, preserves local changes, and does not install updates. It reports upstream/local differences or an unavailable check and then continues with the installed version; report-only edits and continuations do not repeat the check.
+
 The shareable skill files are all committed under `skills/canvas-course-review/`, including dependencies, collector, validator, and references. Share the repository or copy that complete folder; the installed local symlink is not the distributable. See [portable setup and collection coverage](skills/canvas-course-review/references/api-collection.md).
 
 ```bash
@@ -25,13 +27,13 @@ Choose a review level:
 | 2 — API + browser (recommended) | Level 1 + browser verification where API/local evidence is insufficient |
 | 3 — API + browser + blind assessment | Level 2 + independent blind assessment, reconciliation, and policy audit |
 
-All levels retain the 42-item design rubric, grammar pass, narrative checklist, and report validation. Level 1 explicitly leaves browser-dependent conclusions unverified. Levels 1–2 do not include independent confirmation. The selected level appears in the report. See [review-level scope and selection](skills/canvas-course-review/references/review-levels.md).
+All levels retain the 42-item design rubric, grammar pass, narrative coverage checks, and report validation. Level 1 explicitly leaves browser-dependent conclusions unverified. Levels 1–2 do not include independent confirmation. The selected level appears in the report. See [review-level scope and selection](skills/canvas-course-review/references/review-levels.md).
 
 Example request:
 
 > Use $canvas-course-review to review this Canvas course before launch. Extract API evidence first, verify the necessary findings and visual/access checks in the browser, include draft modules, document evidence limitations, and produce the CUOCDR report and faculty narrative.
 
-Deliverables are manifest.json, review.json, narrative.md, review.md, and validation.json in a unique local run directory. See [the report contract](skills/canvas-course-review/references/report-contract.md). The validator checks criterion completeness, source references/local hashes, rating/evidence consistency, stage outcomes, narrative coverage excerpts, and the word limit. It cannot establish semantic correctness, accessibility compliance, or remote link health; the reviewer must inspect evidence and check the narrative substantively.
+Delivered reports use `<course-id>-<course-code>_review_<unix-timestamp>.md` and the matching `.pdf` when requested, for example `28805-MASTER_BTHT_3023_ONL_review_17888888987.pdf`. Internal artifacts retain manifest.json, review.json, narrative.md, review.md, and validation.json in a unique local run directory. See [the report contract](skills/canvas-course-review/references/report-contract.md). The validator checks criterion completeness, source references/local hashes, rating/evidence consistency, stage outcomes, narrative coverage excerpts, and the word limit. It cannot establish semantic correctness, accessibility compliance, or remote link health; the reviewer must inspect evidence and check the narrative substantively.
 
 ```bash
 python3 skills/canvas-course-review/scripts/validate_review.py /absolute/path/to/run --render
@@ -48,7 +50,7 @@ Synthetic tests exercise the collector through actual SDK models and pagination,
 
 The internal manifest retains the complete file inventory; the report omits excluded files and scopes content review to instructional documents such as DOCX, PDF, PPTX, and spreadsheets. Images/media receive contextual accessibility checks; unused assets and their exclusion reasons remain in internal artifacts. Unlinked documents and instructor references receive a scope check before content inspection.
 
-Faculty reports include the narrative, full rubric, and a revision checklist. Detailed sources and verification coverage are saved separately in `evidence-register.md`; excluded files remain in internal JSON only. Both Markdown artifacts are generated and checked by the validator.
+Faculty reports include a conversational overview with numbered priorities and links to detailed findings, followed by all 42 criteria in the required five-column rubric tables. Actions and their Canvas destinations appear as ordinary lists in the table action cells, without checkboxes or a separate revision checklist. Full scope and limitations remain in the report. Detailed sources and verification coverage are saved separately in `evidence-register.md`; excluded files remain in internal JSON only. Both Markdown artifacts are generated and checked by the validator.
 
 Level 3 includes an independent blind agent assessment using saved raw evidence, followed by reconciliation and a report-policy audit. Browser checks are not repeated by default. Confirmation records stay with the ignored course-review artifacts; the reusable workflow is included in the shared skill.
 

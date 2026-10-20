@@ -3,6 +3,7 @@
 import argparse
 import hashlib
 import json
+import re
 from html import escape
 from datetime import datetime
 from pathlib import Path
@@ -19,6 +20,22 @@ LEVELS = {
     'api_browser': '2 — API content + necessary browser verification + narrative',
     'api_browser_blind': '3 — API content + necessary browser verification + blind assessment + narrative',
 }
+
+
+def report_stem(manifest):
+    """Stable, filesystem-safe basename shared by Markdown and PDF deliverables."""
+    course = manifest['course']
+    def component(value):
+        return re.sub(r'[^A-Za-z0-9_-]+', '_', str(value)).strip('_-')
+    course_id = component(course['id'])
+    code = component(course.get('course_code') or course['name'])
+    if not course_id or not code:
+        raise ValueError('course identity cannot form a report filename')
+    stamp = manifest.get('follow_up', {}).get('updated_at') or manifest['snapshot_at']
+    timestamp = datetime.fromisoformat(stamp.replace('Z', '+00:00'))
+    if timestamp.utcoffset() is None:
+        raise ValueError('report filename timestamp requires a timezone')
+    return f'{course_id}-{code}_review_{int(timestamp.timestamp())}'
 
 
 def nonempty(value):
@@ -64,7 +81,7 @@ def action_links(record):
 
 
 def action_pairs(record, table=False):
-    """Keep each specific task adjacent to its destination in both report views."""
+    """Keep each specific task adjacent to its destination in the action list."""
     links = record.get('action_links', [])
     if not links or not all(nonempty(link.get('action')) for link in links):
         return ''
@@ -102,10 +119,13 @@ def render(manifest, review, narrative):
         lines += ['', f"Review note: Pending criterion checks: {pending}; deferred items: {deferred}. "
                   "Read Scope and limitations below for evidence gaps and review boundaries."]
     if narrative:
-        lines += ['', '## Faculty-facing narrative draft', '', narrative.strip()]
+        embedded = re.sub(r'^Subject:[^\n]*\n*', '', narrative.strip())
+        lines += ['', '## Faculty overview', '', embedded]
+    lines += ['', '## Detailed design findings', '',
+              'Each action is paired with its course location. Pending verification and instructor preparation remain distinct from confirmed revisions.']
     records = {c['id']: c for c in review['criteria']}
     for title, items in rubric():
-        lines += ['', f'## {title}', '', '| ID | Criterion | Rating | Evidence | Action / verification |',
+        lines += ['', f'## {title}', '', '| CU / ID | Criterion | Rating | Findings / scope | Action / verification |',
                   '| --- | --- | --- | --- | --- |']
         for cid, wording in items:
             c = records.get(cid)
@@ -129,22 +149,7 @@ def render(manifest, review, narrative):
                 preparation_links = action_links(placeholder)
                 if preparation_links:
                     action += f' — {preparation_links}'
-            lines.append('| ' + ' | '.join(cell(v) for v in (cid, wording, label, evidence, action)) + ' |')
-    lines += ['', '## Revision checklist', '']
-    revisions = [c for c in review['criteria'] if c['rating'] in PRIORITIES | {'Minor Revision'}]
-    accessibility_compliance = {1, 7, 8, 11, 14, 15, 16, 17, 18, 19, 20, 21, 22, 27}
-    severity = {'Major Revision': 0, 'Moderate Revision': 1, 'Minor Revision': 2}
-    revisions.sort(key=lambda c: (c['id'] not in accessibility_compliance, severity[c['rating']], c['id']))
-    for c in revisions:
-        related = action_links(c)
-        paired = action_pairs(c)
-        if paired:
-            lines += [f"- CU {c['id']} ({c['rating']})", '', paired, '']
-        else:
-            lines.append(f"- CU {c['id']} ({c['rating']}): {c['action_plan']}" +
-                         (f' — {related}' if related else ''))
-    if not revisions:
-        lines.append('No revision findings recorded; consult status and limitations.')
+            lines.append('| ' + ' | '.join(cell(v) for v in (cid, f'<a id="cu-{cid}"></a>{wording}', label, evidence, action)) + ' |')
     placeholders = [c for c in review['criteria'] if c.get('template_placeholder')]
     if placeholders:
         lines += ['', '## Instructor preparation reminders', '',
@@ -382,7 +387,12 @@ def validate(root, m, r):
         count = len(narrative.split())
         check(0 < count <= 600, f'narrative word count {count}; maximum 600')
         first = next((line for line in narrative.splitlines() if line.strip()), '')
-        check(first.startswith('Subject:') and m.get('course', {}).get('name', '') in first, 'subject must include exact course name')
+        narrative_format = n.get('format', 'email')
+        check(narrative_format in {'email', 'report_overview'}, 'invalid narrative format')
+        if narrative_format == 'email':
+            check(first.startswith('Subject:') and m.get('course', {}).get('name', '') in first, 'subject must include exact course name')
+        else:
+            check(not first.startswith('Subject:'), 'report overview must omit email subject')
         if r.get('status') == 'partial':
             check('partial review' in narrative.lower(), 'narrative must disclose partial review')
         coverage = n.get('coverage', [])
@@ -417,7 +427,12 @@ def main():
             queue_path = root / 'browser-checks.json'
             checks = json.loads(local_file(root, 'browser-checks.json').read_text()) if queue_path.exists() else None
             evidence = render_evidence(m, r, checks)
-            for filename, content in [('review.md', report), ('evidence-register.md', evidence)]:
+            outputs = [('review.md', report), ('evidence-register.md', evidence)]
+            # Existing runs remain valid without a named copy until explicitly rendered.
+            named_report = report_stem(m) + '.md'
+            if args.render or (root / named_report).exists():
+                outputs.append((named_report, report))
+            for filename, content in outputs:
                 if args.render:
                     (root / filename).write_text(content)
                 elif local_file(root, filename).read_text() != content:
@@ -425,6 +440,8 @@ def main():
     except (OSError, ValueError, KeyError, TypeError, AttributeError) as e:
         errors = [f'invalid input: {e}']
     result = {'valid': not errors, 'errors': errors, 'narrative_word_count': count, 'narrative_coverage': coverage}
+    if not errors:
+        result['report_basename'] = report_stem(m)
     (root / 'validation.json').write_text(json.dumps(result, indent=2) + '\n')
     print(json.dumps({'valid': not errors, 'errors': errors, 'narrative_word_count': count}))
     return 0 if not errors else 1

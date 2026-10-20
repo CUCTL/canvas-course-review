@@ -21,7 +21,7 @@ class Transport:
     def __init__(self):
         self.calls, self.fail = [], set()
         self.routes = {
-            ('courses/7', None): {'id': 7, 'name': 'Fixture Course', 'default_view': 'wiki',
+            ('courses/7', None): {'id': 7, 'name': 'Fixture Course', 'course_code': 'MASTER_TEST_101_ONL', 'default_view': 'wiki',
                                  'syllabus_body': '<h2>Welcome</h2>', 'enrollments': [{'user_id': 999, 'grades': {'score': 50}}]},
             ('courses/7/settings', None): {'hide_final_grades': True},
             ('courses/7/front_page', None): {'page_id': 2, 'url': 'start', 'title': 'Start', 'body': '<p>Start here</p>', 'published': False},
@@ -81,6 +81,7 @@ class CollectorTests(unittest.TestCase):
         self.assertEqual('completed', self.collector.run())
         manifest = json.loads((self.root / 'manifest.json').read_text())
         objects = json.loads((self.root / 'course.json').read_text())['objects']
+        self.assertEqual('MASTER_TEST_101_ONL', manifest['course']['course_code'])
         self.assertEqual(101, manifest['collection']['counts']['page']['enumerated'])
         self.assertEqual(101, manifest['collection']['counts']['module-1-items']['enumerated'])
         self.assertFalse(objects['module-1']['published'])

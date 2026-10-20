@@ -89,6 +89,7 @@ class Collector:
         self.objects, self.counts = {}, {}
         self.started = datetime.now(timezone.utc).isoformat()
         self.name = f'Course {course_id} (identity unavailable)'
+        self.course_code = ''
         self.course_ok = False
         self.seen = set()
         self.link_seen = set()
@@ -111,7 +112,7 @@ class Collector:
                         'Files are inventoried as metadata only; linked files/media/external tools require browser inspection.',
                         'New Quiz item/question contents are not exposed by the supported SDK methods; inspect in browser.',
                         'Availability overrides and individual accommodation/access conditions are not collected.']
-        manifest = {'schema_version': 1, 'course': {'id': str(self.course_id), 'name': self.name},
+        manifest = {'schema_version': 1, 'course': {'id': str(self.course_id), 'name': self.name, 'course_code': self.course_code},
                     'mode': self.mode, 'scope': 'Course-wide instructor/API design snapshot, including accessible drafts and unlinked content; published_view records visible/configured content scope; course delivery is not evaluated.',
                     'snapshot_at': self.started, 'rubric_version': 'CUOCDR v0.9',
                     'sources': self.sources, 'inventory': self.inventory, 'limitations': limitations,
@@ -236,6 +237,7 @@ class Collector:
             return self.checkpoint(final=True)
         self.course_ok = True
         self.name = getattr(course, 'name', f'Course {self.course_id}')
+        self.course_code = getattr(course, 'course_code', '')
         self.save(course, 'course', self.course_id, home)
         settings = self.read('course settings', home, course.get_settings)
         if settings is not None:
