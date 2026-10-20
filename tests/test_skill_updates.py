@@ -4,6 +4,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 import unittest
+from unittest.mock import patch
 
 SCRIPT = Path(__file__).resolve().parents[1] / 'skills/canvas-course-review/scripts/check_updates.py'
 spec = importlib.util.spec_from_file_location('updates', SCRIPT)
@@ -24,6 +25,9 @@ class UpdateTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
+        cache = patch.dict('os.environ', {'XDG_CACHE_HOME': str(self.root / 'cache')})
+        cache.start()
+        self.addCleanup(cache.stop)
         self.source = self.root / 'upstream'
         self.git('init', str(self.source))
         upstream_skill = self.source / u.SKILL_PATH
@@ -81,6 +85,83 @@ class UpdateTests(unittest.TestCase):
         link = self.root / 'skill-link'
         link.symlink_to(self.skill, target_is_directory=True)
         self.assertEqual('up_to_date', u.check(link, str(self.source))['status'])
+
+    def publish_update(self):
+        source_skill = self.source / u.SKILL_PATH
+        (source_skill / 'SKILL.md').write_text('Updated skill\n')
+        (source_skill / 'scripts').mkdir(exist_ok=True)
+        executable = source_skill / 'scripts/tool.py'
+        executable.write_text('print("updated")\n')
+        executable.chmod(0o755)
+        self.commit(self.source)
+
+    def test_upgrade_copy_retains_backup_and_removes_retired_files(self):
+        import shutil
+        import tarfile
+        retired = self.source / u.SKILL_PATH / 'retired.md'
+        retired.write_text('Old reference\n')
+        self.commit(self.source)
+        standalone = self.root / 'copy'
+        shutil.copytree(self.source / u.SKILL_PATH, standalone)
+        retired.unlink()
+        self.publish_update()
+        result = u.check(standalone, str(self.source), upgrade=True)
+        self.assertEqual('upgraded', result['status'])
+        self.assertTrue(result['installation_modified'])
+        self.assertFalse((standalone / 'retired.md').exists())
+        self.assertTrue((standalone / 'scripts/tool.py').stat().st_mode & 0o111)
+        with tarfile.open(result['backup_path']) as archive:
+            self.assertEqual(b'Old reference\n', archive.extractfile('copy/retired.md').read())
+        self.assertEqual('up_to_date', u.check(standalone, str(self.source), upgrade=True)['status'])
+
+    def test_upgrade_symlink_keeps_git_state_and_unrelated_work(self):
+        self.publish_update()
+        before_head = self.git('rev-parse', 'HEAD', cwd=self.checkout)
+        before_index = self.git('ls-files', '--stage', cwd=self.checkout)
+        notes = self.checkout / 'unrelated.txt'
+        notes.write_text('Keep my work\n')
+        link = self.root / 'linked'
+        link.symlink_to(self.skill, target_is_directory=True)
+        result = u.check(link, str(self.source), upgrade=True)
+        self.assertEqual('upgraded', result['status'])
+        self.assertTrue(link.is_symlink())
+        self.assertEqual(before_head, self.git('rev-parse', 'HEAD', cwd=self.checkout))
+        self.assertEqual(before_index, self.git('ls-files', '--stage', cwd=self.checkout))
+        self.assertEqual('Keep my work\n', notes.read_text())
+
+    def test_upgrade_preserves_local_edits_and_unpublished_commits(self):
+        self.publish_update()
+        (self.skill / 'SKILL.md').write_text('My local edition\n')
+        before = self.snapshot()
+        self.assertEqual('upgrade_skipped', u.check(self.skill, str(self.source), upgrade=True)['status'])
+        self.assertEqual(before, self.snapshot())
+        self.commit(self.checkout)
+        before = self.snapshot()
+        self.assertEqual('upgrade_skipped', u.check(self.skill, str(self.source), upgrade=True)['status'])
+        self.assertEqual(before, self.snapshot())
+
+    def test_failed_swap_restores_installation(self):
+        self.publish_update()
+        before = self.snapshot()
+        real_rename = Path.rename
+
+        def fail_prepared(path, target):
+            if path.name == 'prepared':
+                raise OSError('Simulated failed swap')
+            return real_rename(path, target)
+
+        with patch.object(Path, 'rename', fail_prepared):
+            result = u.check(self.skill, str(self.source), upgrade=True)
+        self.assertEqual('upgrade_failed', result['status'])
+        self.assertFalse(result['installation_modified'])
+        self.assertEqual(before, self.snapshot())
+
+    def test_upstream_symlink_is_rejected_without_changes(self):
+        (self.source / u.SKILL_PATH / 'outside').symlink_to('/tmp')
+        self.commit(self.source)
+        before = self.snapshot()
+        self.assertEqual('upgrade_failed', u.check(self.skill, str(self.source), upgrade=True)['status'])
+        self.assertEqual(before, self.snapshot())
 
 
 if __name__ == '__main__':

@@ -12,14 +12,21 @@ Perform an evidence-based, read-only CUOCDR review and produce a verified local 
 At the start of every new course review, before collection or assessment, run:
 
 ```bash
-python3 <skill-path>/scripts/check_updates.py
+python3 <skill-path>/scripts/check_updates.py --upgrade
 ```
 
-This checks [the GitHub source](https://github.com/yehaisong/canvas-course-review) at its current default-branch HEAD, using a temporary Git repository. The helper does not change the installation, working tree, index, branch, or saved reports. Resolve `<skill-path>` from this SKILL.md, including when installed through a symlink. Run once per new review, not for each continuation, report reformat or PDF export.
+This checks [the GitHub source](https://github.com/yehaisong/canvas-course-review) at its current default-branch HEAD and upgrades the skill when its installed files exactly match a version in that upstream history. Resolve `<skill-path>` from this SKILL.md, including symlink installations. Run once per new review, not for continuations, report reformats or PDF exports. Honor an explicit offline request by skipping the check and noting it.
 
-Read the JSON result. For `up_to_date`, continue quietly. For `local_changes`, explain briefly that the local skill includes unpublished changes. For `upstream_changes` or `local_and_upstream_changes`, report the upstream commit and differing files before proceeding; do not claim that differences prove a newer version when local commits may be ahead or diverged. For `different_no_local_baseline`, disclose that the copied installation differs and version ordering is unknown. For `check_unavailable`, disclose that the GitHub update check could not be completed and continue with the installed skill. Do not block a review solely on a network/update-check failure.
+The updater preserves a complete rollback archive outside the skill folder, stages the replacement, verifies file hashes and permissions, and restores the original folder if installation fails. It changes only the resolved skill folder; Git branches, index, repository HEAD, unrelated files and saved reports remain unchanged. A repository installation may consequently show the upgraded skill files as working-tree changes. The returned `installed_commit` identifies the source of the actual installed skill; repository HEAD alone does not identify its installed version.
 
-Checking does not install updates. Preserve local edits; do not automatically pull, reset, checkout or replace files. If the user requests an update, reconcile it separately, verify the resulting skill, and re-read its SKILL.md before collecting course evidence. Honor an explicit request to work offline by skipping the network check and noting it. The helper supports `--source-url` and `--ref` when the user explicitly selects another source.
+Read the JSON result:
+
+- `up_to_date`: continue quietly.
+- `upgraded`: briefly report `installed_commit` and `backup_path`, then **re-read the installed SKILL.md and any relevant references already loaded** before collecting evidence. Use the upgraded scripts for this review; do not repeat the startup check after reloading.
+- `upgrade_skipped`: the installed tree does not match a published ancestor. Explain that local edits, unpublished commits or an unknown copy were preserved. Continue with the installed skill; reconcile differences only when requested.
+- `check_unavailable` or `upgrade_failed`: disclose that the update could not finish and continue with the preserved installation. Do not block the review solely on an update failure.
+
+Omit `--upgrade` for a strictly read-only comparison. Its difference statuses (`local_changes`, `upstream_changes`, `local_and_upstream_changes`, `different_no_local_baseline`) describe comparisons, not proof that one version is newer. The helper supports `--source-url` and `--ref` only when the user explicitly selects another source. Existing clients with the older check-only startup instruction need a one-time manual skill update to receive this automatic upgrade behavior.
 
 ## Select review level
 
