@@ -9,7 +9,7 @@ import shutil
 import subprocess
 import tempfile
 
-SOURCE_URL = 'https://github.com/yehaisong/canvas-course-review.git'
+SOURCE_URL = 'https://github.com/CUCTL/canvas-course-review.git'
 SKILL_PATH = 'skills/canvas-course-review'
 
 

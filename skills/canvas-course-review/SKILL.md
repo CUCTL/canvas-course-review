@@ -15,7 +15,7 @@ At the start of every new course review, before collection or assessment, run:
 python3 <skill-path>/scripts/check_updates.py --upgrade
 ```
 
-This checks [the GitHub source](https://github.com/yehaisong/canvas-course-review) at its current default-branch HEAD and upgrades the skill when its installed files exactly match a version in that upstream history. Resolve `<skill-path>` from this SKILL.md, including symlink installations. Run once per new review, not for continuations, report reformats or PDF exports. Honor an explicit offline request by skipping the check and noting it.
+This checks [the GitHub source](https://github.com/CUCTL/canvas-course-review) at its current default-branch HEAD and upgrades the skill when its installed files exactly match a version in that upstream history. Resolve `<skill-path>` from this SKILL.md, including symlink installations. Run once per new review, not for continuations, report reformats or PDF exports. Honor an explicit offline request by skipping the check and noting it.
 
 The updater preserves a complete rollback archive outside the skill folder, stages the replacement, verifies file hashes and permissions, and restores the original folder if installation fails. It changes only the resolved skill folder; Git branches, index, repository HEAD, unrelated files and saved reports remain unchanged. A repository installation may consequently show the upgraded skill files as working-tree changes. The returned `installed_commit` identifies the source of the actual installed skill; repository HEAD alone does not identify its installed version.
 
