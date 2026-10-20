@@ -71,7 +71,7 @@ def cell(value):
 
 
 def action_links(record):
-    """Render reviewer-selected Canvas destinations; never guess from source IDs."""
+    """Render inspected course destinations; never guess from source IDs."""
     links = []
     for link in record.get('action_links', []):
         label = link['label'].replace('\\', '\\\\').replace('[', '\\[').replace(']', '\\]').replace('\n', ' ')
@@ -142,7 +142,7 @@ def render(manifest, review, narrative):
             if paired:
                 action = paired + (f" Uncertainty: {c['uncertainty']}" if c['uncertainty'] else '')
             elif related:
-                action += f'\nRelated Canvas: {related}'
+                action += f'\nRelated locations: {related}'
             placeholder = c.get('template_placeholder')
             if placeholder:
                 action += f'\nInstructor preparation reminder: {placeholder["reminder"]}'
@@ -152,8 +152,7 @@ def render(manifest, review, narrative):
             lines.append('| ' + ' | '.join(cell(v) for v in (cid, f'<a id="cu-{cid}"></a>{wording}', label, evidence, action)) + ' |')
     placeholders = [c for c in review['criteria'] if c.get('template_placeholder')]
     if placeholders:
-        lines += ['', '## Instructor preparation reminders', '',
-                  'Intentional master/blueprint scaffolds count as Present when the remaining criterion requirements are met. These reminders identify instructor preparation, not completed personalization or verified learner visibility.', '']
+        lines += ['', '## Instructor preparation reminders', '']
         for c in placeholders:
             related = action_links(c['template_placeholder'])
             lines.append(f'- CU {c["id"]}: {c["template_placeholder"]["reminder"]}' +
@@ -179,6 +178,9 @@ def render_evidence(manifest, review, checks=None):
         lines += [f"### Criterion {c['id']}", '',
                   f"Rating: {c['rating'] or ('Deferred' if c['deferred'] else 'Pending verification')}; evidence state: {c['evidence_status']}.",
                   f"Sources: {', '.join(c['source_ids'])}", '', c['evidence']]
+    if any(c.get('template_placeholder') for c in review['criteria']):
+        lines += ['', '## Template interpretation', '',
+                  'Internal reviewer interpretation: intentional instructor-completion scaffolds count as Present only when the other criterion requirements are met. This verifies the scaffold, not completed personalization or learner visibility. Preparation reminders are separate from confirmed revisions.']
     lines += ['', '## Grammar evidence map', '']
     lines += [f"- {g['source_id']}: {g['issue']} — {g['suggested_fix']}" for g in review['grammar']] or ['No recorded mechanical findings.']
     # Preserve full provenance internally; omit excluded files from every report listing.
@@ -228,12 +230,12 @@ def validate(root, m, r):
     except (KeyError, ValueError, TypeError, AttributeError):
         errors.append('invalid snapshot_at')
     source_ids = set()
-    source_locations = {}
+    source_records = {}
     for s in m.get('sources', []):
         check(all(nonempty(s.get(k)) for k in ('id', 'location', 'description')), 'invalid source record')
         check(s.get('id') not in source_ids, 'duplicate source id')
         source_ids.add(s.get('id'))
-        source_locations[s.get('id')] = s.get('location')
+        source_records[s.get('id')] = s
         if 'artifact' in s:
             try:
                 p = local_file(root, s['artifact'])
@@ -255,6 +257,8 @@ def validate(root, m, r):
             check(bool(i.get('source_ids')) and set(i.get('source_ids', [])) <= source_ids, 'inventory source references missing/unresolved')
         else:
             check(nonempty(i.get('reason')), 'blocked/excluded inventory needs reason')
+    inspected_sources = {sid for item in m.get('inventory', []) if item.get('status') == 'inspected'
+                         for sid in item.get('source_ids', [])}
     file_ids = set()
     check(isinstance(m.get('file_reviews', []), list), 'file_reviews must be an array')
     for f in m.get('file_reviews', []) if isinstance(m.get('file_reviews', []), list) else []:
@@ -347,13 +351,20 @@ def validate(root, m, r):
                 check(isinstance(sid, str) and sid in c.get('source_ids', []), prefix + 'action link needs a criterion source')
                 try:
                     target = urlsplit(link.get('url', ''))
-                    source = urlsplit(source_locations.get(sid, ''))
+                    record = source_records.get(sid, {})
+                    source = urlsplit(record.get('location', ''))
                     course_path = f"/courses/{m.get('course', {}).get('id')}"
+                    path = unquote(target.path)
+                    in_course = path == course_path or path.startswith(course_path + '/')
+                    external_document = (record.get('kind') == 'external_document'
+                                         and record.get('course_id') == m.get('course', {}).get('id')
+                                         and sid in inspected_sources
+                                         and not re.match(r'^/courses(?:/|$)', path))
                     check(target.scheme == 'https' and bool(target.netloc) and not target.username and not target.password
-                          and (target.path == course_path or target.path.startswith(course_path + '/'))
+                          and '..' not in path.split('/') and (in_course or external_document)
                           and (target.scheme, target.netloc, unquote(target.path), target.query) ==
                               (source.scheme, source.netloc, unquote(source.path), source.query),
-                          prefix + 'action link must match its registered HTTPS Canvas course source')
+                          prefix + 'action link must match its registered HTTPS course source or inspected external document')
                 except (ValueError, TypeError, AttributeError):
                     errors.append(prefix + 'invalid action link URL/source')
         if rating in REVISIONS:
@@ -403,7 +414,10 @@ def validate(root, m, r):
             check(nonempty(entry.get('passage')) and entry['passage'] in narrative, 'coverage passage absent from narrative')
             check(nonempty(entry.get('next_step')) and entry['next_step'] in entry.get('passage', ''), 'mapped next step absent from passage')
         tips = n.get('teaching_tips', [])
-        check(len(set(tips)) >= 3 and all(nonempty(t) and t in narrative for t in tips), 'three distinct teaching-tip excerpts required')
+        check(isinstance(tips, list) and len(tips) >= 3
+              and all(nonempty(t) and t in narrative for t in tips)
+              and len({t.strip().casefold() for t in tips if nonempty(t)}) == len(tips),
+              'at least three distinct teaching-tip excerpts must be present in the narrative')
         for key in ('strengths_excerpt', 'closing_excerpt'):
             check(nonempty(n.get(key)) and n[key] in narrative, f'{key} absent from narrative')
     return errors, narrative, count, coverage

@@ -1,5 +1,7 @@
 # Master/blueprint placeholders
 
+Internal reviewer policy, not a change to the official rubric or university guidelines. Keep the application rationale in reviewer evidence; faculty-facing actions should simply name the preparation tasks and their locations.
+
 Apply this exception to courses identified by the user as master/blueprint templates or confirmed by source evidence to serve that purpose. API blueprint status alone may not identify every institutional master. Record course_type=master_blueprint and describe the template scope. An unpublished course/page alone does not prove instructor-completion intent.
 
 Inspect the scaffold, facilitator instructions, or authored completion note. When these establish an intentional preparation item, rate the relevant provision Present with verified evidence, deferred=false, and a reminder naming the instructor task, location and completion timing (usually before learners enter). State that Present recognizes template design; do not imply the biography, meeting link or publication is already finished. Intentionally unpublished preparation pages are included in the review, not discarded as unused.

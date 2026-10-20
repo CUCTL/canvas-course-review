@@ -187,7 +187,7 @@ class ContractTests(unittest.TestCase):
         report = v.render(self.m, self.r, (self.root / 'narrative.md').read_text())
         destination = '[Introduction \\[video\\]](' + url + ')'
         row = next(line for line in report.splitlines() if line.startswith('| 21 |'))
-        self.assertIn('Related Canvas: ' + destination, row)
+        self.assertIn('Related locations: ' + destination, row)
         self.assertEqual(1, report.count(destination))
         # Equivalent percent-encoding and a section anchor still reference the inspected source.
         c['action_links'][0]['url'] = url.replace('%7C', '|') + '#captions'
@@ -235,7 +235,7 @@ class ContractTests(unittest.TestCase):
         row = next(line for line in report.splitlines() if line.startswith('| 21 |'))
         self.assertIn('<ul><li>Add captions &amp; verify &lt;playback&gt;. — <a href="' + first + '">Introduction</a></li>', row)
         self.assertIn('<li>Correct the transcript. — <a href="' + second + '">Follow-up</a></li></ul>', row)
-        self.assertNotIn('Related Canvas:', row)
+        self.assertNotIn('Related locations:', row)
         self.assertEqual(1, report.count('Add captions &amp; verify &lt;playback&gt;.'))
         self.assertEqual(1, report.count('Correct the transcript.'))
         for action in ('', None):
@@ -243,6 +243,69 @@ class ContractTests(unittest.TestCase):
             self.assertTrue(self.errors())
         c['action_links'][1].pop('action')
         self.assertTrue(self.errors())
+
+    def test_inspected_external_document_actions_validate_and_render(self):
+        url = 'https://example.sharepoint.com/sites/CTL/Shared%20Documents/guide.docx'
+        self.m['sources'].append({'id': 'guide', 'location': url, 'description': 'Reviewed instructor guide',
+                                  'kind': 'external_document', 'course_id': 'fixture'})
+        self.m['inventory'].append({'id': 'guide-content', 'location': url, 'view': 'local document',
+                                    'publication_state': 'unknown', 'status': 'inspected', 'source_ids': ['guide']})
+        c = next(x for x in self.r['criteria'] if x['id'] == 21)
+        c['source_ids'].append('guide')
+        c['action_links'] = [{'action': 'Add the missing instructions to the guide.', 'label': 'Instructor guide',
+                              'url': url + '#instructions', 'source_id': 'guide'}]
+        self.assertEqual([], self.errors())
+        report = v.render(self.m, self.r, (self.root / 'narrative.md').read_text())
+        row = next(line for line in report.splitlines() if line.startswith('| 21 |'))
+        self.assertIn('Add the missing instructions to the guide.', row)
+        self.assertIn('href="' + url + '#instructions"', row)
+        self.assertIn('Instructor guide</a>', row)
+        c['action_links'][0].pop('action')
+        report = v.render(self.m, self.r, (self.root / 'narrative.md').read_text())
+        row = next(line for line in report.splitlines() if line.startswith('| 21 |'))
+        self.assertIn('Related locations:', row)
+        self.assertNotIn('Related Canvas:', row)
+
+    def test_external_documents_require_inspection_registration_and_course_scope(self):
+        url = 'https://example.sharepoint.com/sites/CTL/guide.docx'
+        source = self.m['sources'][0]
+        source.update(location=url, kind='external_document', course_id='fixture')
+        c = next(x for x in self.r['criteria'] if x['id'] == 21)
+        c['action_links'] = [{'action': 'Revise the guide.', 'label': 'Guide', 'url': url, 'source_id': 's1'}]
+        self.assertEqual([], self.errors())
+        for change in ('no_kind', 'wrong_course', 'blocked', 'unregistered', 'different_url', 'credentials', 'http'):
+            with self.subTest(change=change):
+                saved_m, saved_r = copy.deepcopy(self.m), copy.deepcopy(self.r)
+                if change == 'no_kind':
+                    source.pop('kind')
+                elif change == 'wrong_course':
+                    source['course_id'] = 'another-course'
+                elif change == 'blocked':
+                    self.m['inventory'][0].update(status='blocked', reason='Cannot inspect the document.')
+                elif change == 'unregistered':
+                    c['action_links'][0]['source_id'] = 'unknown'
+                elif change == 'different_url':
+                    c['action_links'][0]['url'] = url + '?different=1'
+                else:
+                    unsafe = url.replace('https://', 'https://user:password@' if change == 'credentials' else 'http://')
+                    source['location'] = unsafe
+                    c['action_links'][0]['url'] = unsafe
+                self.assertTrue(self.errors())
+                self.m, self.r = saved_m, saved_r
+                source = self.m['sources'][0]
+                c = next(x for x in self.r['criteria'] if x['id'] == 21)
+
+    def test_external_label_cannot_bypass_canvas_course_or_path_checks(self):
+        source = self.m['sources'][0]
+        source.update(kind='external_document', course_id='fixture')
+        c = next(x for x in self.r['criteria'] if x['id'] == 21)
+        for path in ('/courses/fixture2/pages/guide', '/courses%2Ffixture2/pages/guide',
+                     '/courses/fixture/../fixture2/pages/guide', '/courses/fixture/%2e%2e/fixture2/pages/guide'):
+            with self.subTest(path=path):
+                url = 'https://canvas.example.edu' + path
+                source['location'] = url
+                c['action_links'] = [{'label': 'Guide', 'url': url, 'source_id': 's1'}]
+                self.assertTrue(self.errors())
 
     def test_evidence_register_consistency_is_checked(self):
         for filename, obj in [('manifest.json', self.m), ('review.json', self.r)]:
@@ -302,6 +365,10 @@ class ContractTests(unittest.TestCase):
         self.assertIn(c['template_placeholder']['reminder'], row)
         reminders = report.split('## Instructor preparation reminders')[1].split('## Mechanical grammar')[0]
         self.assertIn('CU 30:', reminders)
+        self.assertIn(c['template_placeholder']['reminder'], reminders)
+        self.assertNotIn('scaffolds', reminders)
+        self.assertNotIn('master/blueprint', reminders)
+        self.assertIn('## Template interpretation', v.render_evidence(self.m, self.r))
         self.assertNotIn('## Revision checklist', report)
 
     def test_master_placeholder_does_not_override_other_deficiencies(self):
@@ -410,6 +477,34 @@ class ContractTests(unittest.TestCase):
         self.assertEqual([], self.errors())
         c.update(rating='Moderate Revision', evidence_status='verified', action_plan='')
         self.assertTrue(self.errors())
+
+    def test_overview_includes_teaching_tips_and_allows_a_natural_closing(self):
+        text = ('The module sequence provides a clear starting point.\n\n'
+                'For accessible media, add captions to the introduction video.\n\n'
+                'Next term, post a weekly objective summary. Use an exit ticket with explanatory feedback. '
+                'Schedule a discussion and summarize misconceptions.\n\n'
+                'Please let us know if you have questions about these revisions.\n')
+        (self.root / 'narrative.md').write_text(text)
+        self.r['narrative']['format'] = 'report_overview'
+        self.r['narrative']['closing_excerpt'] = 'Please let us know if you have questions about these revisions.'
+        self.assertEqual([], self.errors())
+
+    def test_at_least_three_distinct_teaching_tips_must_appear_in_the_narrative(self):
+        tips = self.r['narrative']['teaching_tips'][:]
+        for invalid in (None, [], tips[:2], [tips[0], tips[0], tips[1]],
+                        [*tips[:2], 'A suggestion absent from the narrative.'], [*tips[:2], {}]):
+            with self.subTest(tips=invalid):
+                self.r['narrative']['teaching_tips'] = invalid
+                self.assertTrue(self.errors())
+        self.r['narrative'].pop('teaching_tips')
+        self.assertTrue(self.errors())
+        # Repeating a suggestion with different case or spaces is still a duplicate.
+        self.r['narrative']['teaching_tips'] = [tips[0], tips[1], ' ' + tips[0].upper() + ' ']
+        with (self.root / 'narrative.md').open('a') as handle:
+            handle.write('\n ' + tips[0].upper() + ' \n')
+        self.assertTrue(self.errors())
+        self.r['narrative']['teaching_tips'] = tips
+        self.assertEqual([], self.errors())
 
     def test_narrative_coverage_and_word_limit(self):
         self.r['narrative']['coverage'] = []

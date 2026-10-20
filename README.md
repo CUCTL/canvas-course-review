@@ -12,7 +12,7 @@ The canonical public source is [CUCTL/canvas-course-review](https://github.com/C
 
 Each new review runs `scripts/check_updates.py --upgrade` against the [GitHub source](https://github.com/CUCTL/canvas-course-review). An exact match to a published ancestor upgrades automatically, with a rollback archive and file verification. Local edits and unknown versions are preserved; update failures are disclosed and the review continues with the installed version. After an upgrade, Codex reloads the installed instructions before reviewing. Only the skill folder changes; repository HEAD, unrelated files and reports remain unchanged. Omit `--upgrade` for a read-only comparison. Existing clients need one manual update to receive the new startup behavior; continuations and report-only edits do not repeat it.
 
-The shareable skill files are all committed under `skills/canvas-course-review/`, including dependencies, collector, validator, and references. Share the repository or copy that complete folder; the installed local symlink is not the distributable. See [portable setup and collection coverage](skills/canvas-course-review/references/api-collection.md).
+The complete shareable skill package lives under `skills/canvas-course-review/`, including dependencies, collector, validator, and references. Share the repository or copy that complete folder; the installed local symlink is not the distributable. See [portable setup and collection coverage](skills/canvas-course-review/references/api-collection.md).
 
 ```bash
 python3 -m venv .venv
@@ -46,9 +46,9 @@ python3 skills/canvas-course-review/scripts/validate_review.py /absolute/path/to
 
 The unchanged source rubric and legacy instructions are retained in references/. The skill carries its own references so it works when installed independently. The migration plan and research notes remain in docs/; implementation covers hybrid API/browser and export workflows, a read-only collector, and report validation. No service cutover is implemented.
 
-The narrative covers every Moderate/Major finding with concrete next steps, prioritizes accessibility/compliance concerns, provides at least three next-term teaching tips, and closes with institutional support. It is a draft; creating it does not authorize sending it to faculty.
+The narrative covers every Moderate/Major finding with concrete next steps, prioritizes accessibility/compliance concerns, provides at least three unscored next-term teaching tips, and ends with a natural closing. Follow [the narrative guide](skills/canvas-course-review/references/narrative-feedback-guidelines.md) for the writing requirements. It is a draft; creating it does not authorize sending it to faculty.
 
-Synthetic tests exercise the collector through actual SDK models and pagination, alongside validator tests and skill-package validation. A live Canvas pilot and substantive behavior evaluation remain to be performed. No course has been reviewed or changed by repository creation.
+Synthetic tests exercise the collector through actual SDK models and pagination, alongside validator tests and skill-package validation. Live-service behavior must be verified separately for each course review or authorized Kuali draft transfer.
 
 The internal manifest retains the complete file inventory; the report omits excluded files and scopes content review to instructional documents such as DOCX, PDF, PPTX, and spreadsheets. Images/media receive contextual accessibility checks; unused assets and their exclusion reasons remain in internal artifacts. Unlinked documents and instructor references receive a scope check before content inspection.
 
@@ -56,6 +56,8 @@ Faculty reports include a conversational overview with numbered priorities and l
 
 Level 3 includes an independent blind agent assessment using saved raw evidence, followed by reconciliation and a report-policy audit. Browser checks are not repeated by default. Confirmation records stay with the ignored course-review artifacts; the reusable workflow is included in the shared skill.
 
-Scope is course design only, even for published/running courses. Interaction and feedback are assessed as documented plans and designed opportunities. Actual teaching performance, feedback execution, student activity/outcomes, and accommodation delivery are outside scope; next-term teaching tips remain optional.
+Scope is course design only, even for published/running courses. Interaction and feedback are assessed as documented plans and designed opportunities. Actual teaching performance, feedback execution, student activity/outcomes, and accommodation delivery are outside scope; the required next-term teaching tips are suggestions faculty may choose to use, without affecting design ratings.
 
 Master/blueprint reviews count intentional instructor-completion scaffolds as Present, with explicit completion/publication reminders in the report. Unpublished status alone does not establish this exception; core content and accessibility requirements still apply. See [template placeholder guidance](skills/canvas-course-review/references/template-placeholders.md).
+
+When requested, the skill can also prepare, save and verify an unsubmitted Kuali CUOCDR draft. The local helper handles payload preparation and read-back checks; authenticated browser interaction handles saving. Existing human edits are preserved, and draft authorization does not include submission. See [the Kuali draft workflow](skills/canvas-course-review/references/kuali-draft.md).

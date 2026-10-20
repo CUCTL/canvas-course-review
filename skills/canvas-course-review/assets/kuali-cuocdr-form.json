@@ -1,0 +1,1487 @@
+{
+  "id": "69cbcbdd5e76d902860887a6",
+  "schema": [
+    {
+      "formKey": "data.4Q4nfvNWGL",
+      "label": "Course"
+    },
+    {
+      "formKey": "data.od5-zSXjq0",
+      "label": "#1 Course includes all CU Syllabi Requirements, including:\n\n"
+    },
+    {
+      "formKey": "data.xLmZIvYE9V",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.Wc2IJ2mZLt",
+      "label": "#2 Clear overviews and structure are provided at the course and module level. "
+    },
+    {
+      "formKey": "data.peaYnK3qKd",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.mqyGKaSUc8",
+      "label": "#3 Syllabus provides clear course expectations including technical requirements."
+    },
+    {
+      "formKey": "data.CxT34cX16b",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.NTOBzv8544",
+      "label": "#4 Course Objectives are clearly defined, measurable, level appropriate, and aligned to learning activities and assessments."
+    },
+    {
+      "formKey": "data.PFnkq4By05",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.4Y9QOrA-WM",
+      "label": "#5 Requisite skills for using technology tools (websites, software, and hardware) are clearly stated, scaffolded in a timely manner and supported with resources."
+    },
+    {
+      "formKey": "data.5-MfE6944J",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.S005noAsFw",
+      "label": "#6 Frequently used technology tools can be easily accessed. Any tools not being utilized are removed from the course menu."
+    },
+    {
+      "formKey": "data.0da_fgED8T",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.0E7MB9zbvT",
+      "label": "#7 Course includes links to privacy policies for technology tools."
+    },
+    {
+      "formKey": "data.qdfSCtGvDd",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.tf9m89ZOzg",
+      "label": "#8 Any technology tools meet accessibility standards."
+    },
+    {
+      "formKey": "data.d7VnU_GIKc",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.TY4oBKs7fW",
+      "label": "#9 A logical, consistent, and uncluttered layout is established. The course is easy to navigate (consistent color scheme and icon layout, related content organized together, self-evident titles)."
+    },
+    {
+      "formKey": "data.CieYeujExb",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.1kyO_iLdUv",
+      "label": "#10 Large blocks of information are divided into manageable sections with ample white space around and between the blocks."
+    },
+    {
+      "formKey": "data.aG_UZC_Obj",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.oSPQgDYCkR",
+      "label": "#11 There is enough contrast between text and background for the content to be easily viewed."
+    },
+    {
+      "formKey": "data.1of5PALqBh",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.l5H-MXaKzV",
+      "label": "#12 Instructions are provided and well written."
+    },
+    {
+      "formKey": "data.YsqEIPCw0B",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.km4F9VBcgm",
+      "label": "#13 Course is free of grammatical and spelling errors."
+    },
+    {
+      "formKey": "data.xdwDYJk_kB",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.tSt8UJ7bAA",
+      "label": "#14 Text is formatted with titles, headings, and other styles to enhance readability and improve the structure of the document."
+    },
+    {
+      "formKey": "data.auk2p_x7zg",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.nZjehw9KxA",
+      "label": "#15 Flashing or blinking and red or green text are avoided."
+    },
+    {
+      "formKey": "data.A5kcD0RtOX",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.QmhZcCajyr",
+      "label": "#16 A sans-serif font with a standard size of at least 12 pt is used."
+    },
+    {
+      "formKey": "data.dZGiscooTF",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.y-W6CVWEOp",
+      "label": "#17 Table meets CU accessibility standards."
+    },
+    {
+      "formKey": "data.dcDgNlJ6dY",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.jDmC10ju9O",
+      "label": "#18 Slideshows use a predefined slide layout and include unique slide titles."
+    },
+    {
+      "formKey": "data.kUL01Ql_qP",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.likjDVkH8f",
+      "label": "#19 For all slideshows, there are simple, non-automatic transitions between slides."
+    },
+    {
+      "formKey": "data.OSOs4d6gNj",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.slvxi5hONJ",
+      "label": "#20 Text content is available in an easily accessed format, preferably HTML. All text content is readable by assistive technology, including a PDF or any text contained in an image."
+    },
+    {
+      "formKey": "data.Y_8CplPy1H",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.jETtfislnV",
+      "label": "#21 A text equivalent for every non-text element is provided (\u201calt\u201d tags, captions, transcripts, etc.), and audio description is provided for video-only content."
+    },
+    {
+      "formKey": "data.w7rPulJw6I",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.0j3M0oIDWY",
+      "label": "#22 Text, graphics, and images are understandable when viewed without color. Text should be used as a primary method for delivering information when possible."
+    },
+    {
+      "formKey": "data.4bjmZtCn_J",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.b0BaUGFpsP",
+      "label": "#23 Hyperlink text is descriptive and makes sense when out of context (avoid using \"click here\")."
+    },
+    {
+      "formKey": "data.ANyLo_yUZD",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.toMeIGLXQd",
+      "label": "#24 Course offers access to a variety of engaging resources to present content, support learning and collaboration, foster biblical integration, and facilitate regular and substantive interaction with the instructor."
+    },
+    {
+      "formKey": "data.SlJBwyPotg",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.DNkCumnEhi",
+      "label": "#26 Course provides activities for learners to develop higher-order thinking and problem-solving skills, such as critical reflection and analysis. "
+    },
+    {
+      "formKey": "data.aX1SgSEDWt",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.cos7JCwEo_",
+      "label": "#27 Course materials and resources include copyright and licensing status, clearly stating permission to share where applicable. "
+    },
+    {
+      "formKey": "data.Od8W-OpfSg",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.ZdoGWzXha0",
+      "label": "#28 Regular and substantive instructor-to-student expectations, and predictable/scheduled interactions and feedback, are present, appropriate for the course length and structure."
+    },
+    {
+      "formKey": "data.QY631vsr1_",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.gTV9x7k95-",
+      "label": "#29 Expectations for all course interactions (instructor to student, student to student, student to instructor) are clearly stated and modeled in all course interaction/communication channels."
+    },
+    {
+      "formKey": "data.-wGDwHyfs-",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.COUGb-JTQi",
+      "label": "#30 Learners have an opportunity to get to know the instructor."
+    },
+    {
+      "formKey": "data.sA7x4v5yvP",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.BZfkZRG9uo",
+      "label": "#31 Course provides activities intended to build a sense of class community, support open communication, promote regular and substantive interaction, and establish trust (e.g., ice-breaking activities, Course Bulletin Board, planned Office Hours, and dedicated discussion forums)."
+    },
+    {
+      "formKey": "data.7WE27esxhy",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.bOb3T_yIJz",
+      "label": "#32 Course offers opportunities for learner-to-learner interaction and constructive collaboration."
+    },
+    {
+      "formKey": "data.ti13FeFXIq",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.5T5RXW5Nym",
+      "label": "#33 Courses provide guidance and opportunities for students to share what they are learning and helpful resources to promote intellectual and spiritual growth. "
+    },
+    {
+      "formKey": "data.z32HY7n-Xj",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.lBvTlLZGYj",
+      "label": "#34 Course grading policies, including consequences of late submissions, are clearly stated in the Course Information/Syllabus materials. "
+    },
+    {
+      "formKey": "data.GR8Tc2-BrP",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.yRgzgqhE3i",
+      "label": "#35 Course includes frequent, appropriate, and authentic methods to assess the learners\u2019 mastery of content. "
+    },
+    {
+      "formKey": "data.cwTK6UQ46r",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.v9poB1_WIN",
+      "label": "#36 Criteria for the assessment of a graded assignment are clearly articulated (e.g., rubrics, exemplary work, etc.). "
+    },
+    {
+      "formKey": "data.CGnuZs_dX7",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.W653TdnlgA",
+      "label": "#37 Course provides opportunities for learners to review their performance and assess their own learning throughout the course (via pre-tests, self-tests with feedback, reflective assignments, peer assessment, etc.)."
+    },
+    {
+      "formKey": "data.ICdVsl26Dw",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.Qo4B-0ix2v",
+      "label": "#38 Learners are informed when a timed response is required. Proper lead time is provided to ensure there is an opportunity to prepare accommodation.   "
+    },
+    {
+      "formKey": "data.EIa0_-NNd9",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.oWIXjaoZmn",
+      "label": "#39 Course includes the opportunity for learners to provide descriptive feedback on their experience in the online course, the course design, content, user experience, and technology."
+    },
+    {
+      "formKey": "data.QAoNykcvt6",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.cX5YiRQr0z",
+      "label": "#40 Course approaches the content from a biblical perspective."
+    },
+    {
+      "formKey": "data.FiLqByEmdu",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.BHZJW9ZwlB",
+      "label": "#41 Scripture is appropriately referenced in the course materials. "
+    },
+    {
+      "formKey": "data.FpGhPuNJL0",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.Juze4wX9YR",
+      "label": "#42 Questions are surfaced and engaged related to challenges from those outside the faith, as appropriate."
+    },
+    {
+      "formKey": "data.HOPdWBmPNE",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.Bky-mQJ7_e",
+      "label": "#43 Students are challenged to consider content from a Christian perspective and respond biblically to the material being learned."
+    },
+    {
+      "formKey": "data.JZ8ZiAtSO9",
+      "label": "Action Plan"
+    },
+    {
+      "formKey": "data.7KNT-OY8nW",
+      "label": "Narrative Summary of Review"
+    }
+  ],
+  "template": {
+    "children": [
+      {
+        "formKey": "od5-zSXjq0",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "Wc2IJ2mZLt",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "mqyGKaSUc8",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "NTOBzv8544",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "4Y9QOrA-WM",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "S005noAsFw",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "0E7MB9zbvT",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "tf9m89ZOzg",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "TY4oBKs7fW",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "1kyO_iLdUv",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "oSPQgDYCkR",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "l5H-MXaKzV",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "km4F9VBcgm",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "tSt8UJ7bAA",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "nZjehw9KxA",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "QmhZcCajyr",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "y-W6CVWEOp",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "jDmC10ju9O",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "likjDVkH8f",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "slvxi5hONJ",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "jETtfislnV",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "0j3M0oIDWY",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "b0BaUGFpsP",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "toMeIGLXQd",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "DNkCumnEhi",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "cos7JCwEo_",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "ZdoGWzXha0",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "gTV9x7k95-",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "COUGb-JTQi",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "BZfkZRG9uo",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "bOb3T_yIJz",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "5T5RXW5Nym",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "lBvTlLZGYj",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "yRgzgqhE3i",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "v9poB1_WIN",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "W653TdnlgA",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "Qo4B-0ix2v",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "oWIXjaoZmn",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "cX5YiRQr0z",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "BHZJW9ZwlB",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "Juze4wX9YR",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      },
+      {
+        "formKey": "Bky-mQJ7_e",
+        "details": {
+          "options": [
+            {
+              "key": "strongly agree",
+              "lbl": "Present"
+            },
+            {
+              "key": "agree",
+              "lbl": "Minor Revision"
+            },
+            {
+              "key": "neutral",
+              "lbl": "Moderate Revision"
+            },
+            {
+              "key": "disagree",
+              "lbl": "Major Revision"
+            },
+            {
+              "key": "strongly disagree",
+              "lbl": "NA"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
