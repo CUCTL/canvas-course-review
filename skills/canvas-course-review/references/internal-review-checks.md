@@ -15,7 +15,7 @@ Compare the following, using API content/settings and local documents first:
 - Time limits, permitted resources, attempts and result visibility where relevant.
 - Due-date sequence, first post versus replies, and whether dates belong to a template or an actual offering.
 
-Record the inspected locations and exact conflicts in the internal evidence register or working notes. Identify the correct requirement only when evidence establishes it; otherwise ask the course owner to decide. Do not choose a passage, create grading weights, or add a requirement simply to resolve a mismatch. A review does not authorize edits.
+Record the inspected locations and exact conflicts in the internal evidence register or working notes. Identify the correct requirement only when evidence establishes it; otherwise retain the unresolved decision. In faculty-facing actions, state what must be decided without assigning the work to a person or office. Do not choose a passage, create grading weights, or add a requirement simply to resolve a mismatch. A review does not authorize edits.
 
 In the report, describe the conflict in plain language, group the repair into one coherent task, and link all affected locations. A problem can affect more than one criterion, but avoid presenting it as several unrelated repairs. After a repair is verified, update every affected finding and narrative passage so completed work is not still described as open.
 
