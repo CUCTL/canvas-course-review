@@ -23,17 +23,17 @@ In the report, describe the conflict in plain language, group the repair into on
 
 Group findings when the evidence shows that they arise from the same conflicting requirement or need one coordinated correction. Do not merge unrelated tasks merely because they concern the same assignment or share a broad theme such as accessibility.
 
-- Name the task in faculty-facing language, such as “Make the final manuscript instructions agree.” Explain the problem and intended result once in the overview, linking every affected criterion.
+- Name the task in faculty-facing language, such as “Make the final manuscript instructions agree.” Explain the shared problem, its significance for students and a concise next step once in the overview, linking every affected criterion. Keep the full coordinated repair instructions in the tables.
 - Retain every affected criterion's rating, evidence, uncertainty and sources. Grouping does not lower severity, combine ratings or turn a separate unresolved question into a verified finding.
 - In the detailed tables, give each criterion the part of the correction that belongs to it. Keep each action next to its actual course destination. Do not repeat the whole repair list under every criterion or replace useful directions with “see above.”
-- Include every location that must change: overview, prompt, rubric, quiz/settings page, or instructor guide. Keep decisions for the course owner explicit when the intended requirement is not established.
+- Include every location that must change: overview, prompt, rubric, quiz/settings page, or instructor guide. Keep unresolved decisions and approval conditions explicit when the intended requirement is not established, without assigning responsibility for the revision.
 - Keep separate actions when the work or evidence differs. For example, correcting a document's text and checking a video's captions can share an overview theme but remain distinct tasks.
 
 ### Example
 
 Suppose the final manuscript prompt describes a recording, the rubric grades a written study, and the module overview names a different passage. If the evidence supports treating these as one conflict, present one overview priority:
 
-> Make the final manuscript instructions agree. Confirm the intended passage and written submission, then align the module overview, assignment prompt, rubric and instructor guide. This affects objectives/alignment (CU 4), instructions (CU 12), and assessment criteria (CU 36).
+> The final assignment describes different submissions and passages across its instructions and rubric. This can leave students unsure what to prepare and how their work will be judged. Confirm the intended passage and submission, then make the directions and grading criteria agree. See [alignment](#cu-4), [instructions](#cu-12) and [grading criteria](#cu-36) for the affected locations and repairs.
 
 In the table actions, keep the work specific:
 
