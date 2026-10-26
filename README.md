@@ -63,3 +63,5 @@ Master/blueprint reviews count intentional instructor-completion scaffolds as Pr
 When requested, the skill can also prepare, save and verify an unsubmitted Kuali CUOCDR draft. The local helper handles payload preparation and read-back checks; authenticated browser interaction handles saving. Existing human edits are preserved, and draft authorization does not include submission. See [the Kuali draft workflow](skills/canvas-course-review/references/kuali-draft.md).
 
 Before delivery, the separate [writing style reviewer](skills/canvas-course-review/references/writing-style-review.md) checks plain language, organization and preservation of meaning. Its assessment is saved locally and tied to the reviewed text; later changes require a fresh check. The main narrative remains within 600 words and includes at least three practical next-term teaching tips.
+
+New and revised feedback uses review schema version 2, which requires the writing-review record. Version-1 reports remain readable for historical checks; rendering revised reports and preparing Kuali transfers require version 2 and current agent approval. Keep originals and revise a fresh copy.

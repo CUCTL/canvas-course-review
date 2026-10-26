@@ -222,14 +222,24 @@ def main():
     args = parser.parse_args()
     try:
         if args.command == 'prepare':
+            from validate_review import CURRENT_REVIEW_SCHEMA, writing_review_errors
             state = read(args.state)
             doc = document(state)
             # Normal reads need no schema request. A supplied fresh form wins.
             if not doc.get('form'):
                 doc['form'] = read(args.schema)
-            plan = prepare(read(args.run_directory / 'review.json'),
-                           (args.run_directory / 'narrative.md').read_text(),
-                           state, args.course_code, args.replace_field)
+            review = read(args.run_directory / 'review.json')
+            if review.get('schema_version') != CURRENT_REVIEW_SCHEMA:
+                raise ValueError('Kuali transfer requires review schema_version 2 and approved current writing')
+            narrative = (args.run_directory / 'narrative.md').read_text()
+            errors = writing_review_errors(args.run_directory.resolve(),
+                read(args.run_directory / 'manifest.json'), review, narrative, require=True)
+            writing = review.get('writing_review')
+            if not isinstance(writing, dict) or writing.get('status') != 'passed':
+                errors.append('Kuali transfer requires a passed writing review')
+            if errors:
+                raise ValueError('; '.join(errors))
+            plan = prepare(review, narrative, state, args.course_code, args.replace_field)
             args.out.mkdir(parents=True, exist_ok=False)
             def save(name, value):
                 (args.out / name).write_text(json.dumps(value, ensure_ascii=False, indent=2) + '\n')

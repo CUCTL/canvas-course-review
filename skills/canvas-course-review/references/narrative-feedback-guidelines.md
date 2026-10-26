@@ -25,11 +25,12 @@ Set narrative.format=report_overview for new reviews. The course header supplies
 - Keep technical measurements, HTML attributes, scanner discrepancies and verification history in evidence or scope sections. Mention a limit in the narrative when it changes the next step or conclusion. Preserve required partial-review disclosure.
 - In follow-ups, briefly acknowledge completed work, then explain what remains. Keep full edit counts and audit history in the update record. Retain a clear distinction between instructor-reported fixes and independently verified fixes.
 - Keep routine template preparation reminders in the detailed report unless they address a confirmed design finding. Keep internal rating exceptions and policy rationale outside the narrative.
+- Check natural wording even when the sentences are short. Replace compressed labels with the actual meaning: “instructions about reusing images” is clearer than “imagery-license guidance”; “when students will hear from the instructor” is clearer than “the planned instructor-contact schedule.” Use these as examples, not a prohibited-word list. Preserve any important qualification.
 - Read the draft as something you would say to the instructor. Remove sentences that add no useful information, such as “These targeted updates provide a foundation for continued refinement.”
 
 Apply the same language standard to action_plan, verification_step, action_links actions and labels, instructor reminders and any uncertainty displayed beside an action. See [plain language for actions](report-contract.md#plain-language-for-actions-and-checklists). An action must make the task, location and any needed help clear without requiring the educator to interpret reviewer jargon. Technical evidence does not need to be simplified for this purpose.
 
-Simplifying must preserve meaning. “Confirm whether this activity should be group work” cannot become “Make this a group activity.” “Check caption accuracy” cannot become “Correct inaccurate captions” unless inaccurate captions were observed. Keep dates, amounts, intended choices, evidence limits and mandatory versus optional work intact.
+Simplifying must preserve meaning. “Confirm whether this activity should be group work” cannot become “Make this a group activity.” “Check caption accuracy” cannot become “Correct inaccurate captions” unless inaccurate captions were observed. Keep dates, amounts, intended choices, evidence limits and mandatory versus optional work intact. Keep either/or choices explicit: “either link the reading or mark it optional and name an alternative” must not become a requirement to link it under both outcomes.
 
 ## Review and delivery
 

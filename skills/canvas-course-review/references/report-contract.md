@@ -1,4 +1,4 @@
-# Report contract v1
+# Report contract v2
 
 All files use UTF-8. The helper uses Python's standard library. Write manifest.json and review.json as JSON objects and narrative.md as the complete faculty-facing draft (not fenced Markdown). Treat paths as relative to the run directory, without `..` or absolute paths. Do not store secrets or student records.
 
@@ -22,7 +22,7 @@ Optional `manifest.course_type` is `master_blueprint` or `course_offering`. It r
 
 Required fields:
 
-- schema_version: `1`.
+- schema_version: `2` for new reviews and rewritten feedback. Version `1` is supported for read-only checks of historical reports.
 - status: `completed`, `partial`, or `failed`.
 - stages: object with `design`, `grammar`, and `narrative` outcomes, each `completed`, `partial`, `failed`, or `not_started`.
 - limitations: array of nonempty strings, possibly empty. Required to be nonempty for partial/failed status.
@@ -54,17 +54,17 @@ This applies to action_plan, verification_step, action_links[].action and labels
 
 Examples:
 
-- “Add the university’s instructions for filing a complaint to the syllabus,” rather than “Add a grievance-filing route.”
+- “Explain where students should submit the assignment,” rather than “Clarify the submission pathway.” These examples illustrate wording, not additional review requirements; apply the current review policy before recommending a change.
 - “Ask CTL to format the grading table so screen readers can recognize its column headings,” rather than “Make grading-table headers programmatic.”
 - “Check that the video captions match what is said,” rather than “Verify caption-track accuracy.”
 - “State when the first discussion post and replies are due,” rather than “Clarify the initial-post/peer-reply cadence.”
 - “Add your introduction and publish it before students enter the course,” rather than “Complete offering-preparation requirements.”
 
-Simplify the language without changing the task, the rating, the evidence limits, or whether something is a confirmed problem or still needs checking. Preserve the exact source rubric and keep detailed technical evidence in the supporting register. Manually read every action as an end user before delivery: the reader should know what to do, where to do it, and when help is needed.
+Simplify the language without changing the task, the rating, the evidence limits, or whether something is a confirmed problem or still needs checking. Preserve the exact source rubric and keep detailed technical evidence in the supporting register. Summarize a shared repair once in action_plan and name its scope; keep a complete task beside each destination in action_links. Do not repeat the same whole instruction in action_plan once per link. When saved grammar findings provide an exact replacement, put that replacement beside the affected location instead of requiring the educator to search another section. Manually read every action as an end user before delivery: the reader should know what to do, where to do it, and when help is needed.
 
 ## Writing review metadata
 
-For every new review or rewrite of narrative/actions, run [the separate writing style agent](writing-style-review.md) before delivery. Historical records without writing_review remain readable and do not receive a style-approval claim. Keep the existing design/grammar/narrative stage schema; writing_review is a separate object, independent of level-3 confirmation.
+For every new review or rewrite of narrative/actions, run [the separate writing style agent](writing-style-review.md) before delivery. Historical version-1 records remain readable and do not receive a style-approval claim. Version-2 records require writing_review metadata for usable reports. Rendering rejects version 1, so omitting the new field cannot produce a newly generated report; revise a preserved copy as version 2 first. Kuali preparation also requires version 2 and current passed approval. Keep the existing design/grammar/narrative stage schema; writing_review is a separate object, independent of level-3 confirmation.
 
 Fields: status (pending, passed, needs_revision or unavailable), reviewer (the separate agent identity when passed), report (run-relative path to its assessment.json when passed), content_sha256, and limitations (an array of nonempty strings, possibly empty). A passed assessment must have matching status, reviewer and content hash, with issues=[]; it covers the exact narrative, recommendations and read-only factual context. Use prepare_writing_review.py to freeze input and compute the hash. The helper never approves writing. A passed check becomes stale after any covered content changes. Incomplete checks need a limitation and cannot accompany completed report status. Keep assessments in the evidence register, not in the faculty overview. The validator checks records, paths and hashes, not editorial quality or agent identity independently.
 

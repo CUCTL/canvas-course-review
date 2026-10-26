@@ -4,7 +4,7 @@ import argparse
 import json
 from pathlib import Path
 
-from validate_review import local_file, writing_review_hash, writing_review_input
+from validate_review import CURRENT_REVIEW_SCHEMA, local_file, writing_review_hash, writing_review_input
 
 
 def main():
@@ -16,6 +16,10 @@ def main():
     try:
         manifest = json.loads(local_file(root, 'manifest.json').read_text())
         review = json.loads(local_file(root, 'review.json').read_text())
+        if review.get('schema_version') != CURRENT_REVIEW_SCHEMA:
+            raise ValueError('writing revisions require review schema_version 2; prepare a copy of the legacy review first')
+        if review.get('status') == 'failed':
+            raise ValueError('a failed review has no usable narrative for writing assessment')
         narrative = local_file(root, 'narrative.md').read_text()
         content = writing_review_input(manifest, review, narrative)
         snapshot = {'content_sha256': writing_review_hash(content), 'content': content}

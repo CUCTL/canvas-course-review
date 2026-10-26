@@ -9,6 +9,7 @@ from datetime import datetime
 from pathlib import Path
 from urllib.parse import quote, unquote, urlsplit
 
+CURRENT_REVIEW_SCHEMA = 2
 IDS = set(range(1, 44)) - {25}
 RATINGS = {'Present', 'Minor Revision', 'Moderate Revision', 'Major Revision', 'N/A'}
 REVISIONS = {'Minor Revision', 'Moderate Revision', 'Major Revision'}
@@ -71,6 +72,44 @@ def writing_review_input(manifest, review, narrative):
 def writing_review_hash(content):
     encoded = json.dumps(content, ensure_ascii=False, sort_keys=True, separators=(',', ':')).encode()
     return hashlib.sha256(encoded).hexdigest()
+
+
+def writing_review_errors(root, m, r, narrative, require=False):
+    """Validate agent approval independently of legacy report compatibility."""
+    errors = []
+    def check(condition, message):
+        if not condition:
+            errors.append(message)
+    writing = r.get('writing_review')
+    if require and writing is None:
+        errors.append('current review requires writing_review metadata')
+    if writing is not None:
+        if not isinstance(writing, dict):
+            errors.append('writing_review must be an object')
+        else:
+            status = writing.get('status')
+            check(status in {'pending', 'passed', 'needs_revision', 'unavailable'}, 'invalid writing review status')
+            check(isinstance(writing.get('limitations'), list)
+                  and all(nonempty(x) for x in writing.get('limitations', [])), 'invalid writing review limitations')
+            if status == 'passed':
+                check(nonempty(writing.get('reviewer')), 'writing review requires a separate reviewer')
+                current_hash = writing_review_hash(writing_review_input(m, r, narrative))
+                check(writing.get('content_sha256') == current_hash, 'writing review is stale; recheck the changed content')
+                try:
+                    assessment = json.loads(local_file(root, writing.get('report')).read_text())
+                    check(isinstance(assessment, dict), 'writing assessment must be an object')
+                    if isinstance(assessment, dict):
+                        check(assessment.get('status') == 'passed' and assessment.get('issues') == [],
+                              'writing assessment has not passed or has unresolved issues')
+                        check(assessment.get('content_sha256') == current_hash,
+                              'writing assessment does not cover the current content')
+                        check(assessment.get('reviewer') == writing.get('reviewer'), 'writing reviewer mismatch')
+                except (ValueError, TypeError, OSError) as exc:
+                    errors.append(f'writing assessment: {exc}')
+            else:
+                check(bool(writing.get('limitations')), 'incomplete writing review requires limitations')
+                check(r.get('status') != 'completed', 'completed report has incomplete writing style review')
+    return errors
 
 
 def rubric():
@@ -242,7 +281,9 @@ def validate(root, m, r):
         if not condition:
             errors.append(message)
     for obj, label in ((m, 'manifest'), (r, 'review')):
-        check(obj.get('schema_version') == 1, f'{label}: schema_version must be 1')
+        allowed = {1} if label == 'manifest' else {1, CURRENT_REVIEW_SCHEMA}
+        check(type(obj.get('schema_version')) is int and obj.get('schema_version') in allowed,
+              f'{label}: unsupported schema_version')
         check(isinstance(obj.get('limitations'), list) and all(nonempty(x) for x in obj.get('limitations', [])), f'{label}: invalid limitations')
     check(all(nonempty(m.get('course', {}).get(k)) for k in ('id', 'name')), 'course id/name required')
     check(m.get('mode') in {'pre_launch', 'published_view', 'supplied_export'}, 'invalid mode')
@@ -445,33 +486,8 @@ def validate(root, m, r):
               'at least three distinct teaching-tip excerpts must be present in the narrative')
         for key in ('strengths_excerpt', 'closing_excerpt'):
             check(nonempty(n.get(key)) and n[key] in narrative, f'{key} absent from narrative')
-    writing = r.get('writing_review')
-    if writing is not None:
-        if not isinstance(writing, dict):
-            errors.append('writing_review must be an object')
-        else:
-            status = writing.get('status')
-            check(status in {'pending', 'passed', 'needs_revision', 'unavailable'}, 'invalid writing review status')
-            check(isinstance(writing.get('limitations'), list)
-                  and all(nonempty(x) for x in writing.get('limitations', [])), 'invalid writing review limitations')
-            if status == 'passed':
-                check(nonempty(writing.get('reviewer')), 'writing review requires a separate reviewer')
-                current_hash = writing_review_hash(writing_review_input(m, r, narrative))
-                check(writing.get('content_sha256') == current_hash, 'writing review is stale; recheck the changed content')
-                try:
-                    assessment = json.loads(local_file(root, writing.get('report')).read_text())
-                    check(isinstance(assessment, dict), 'writing assessment must be an object')
-                    if isinstance(assessment, dict):
-                        check(assessment.get('status') == 'passed' and assessment.get('issues') == [],
-                              'writing assessment has not passed or has unresolved issues')
-                        check(assessment.get('content_sha256') == current_hash,
-                              'writing assessment does not cover the current content')
-                        check(assessment.get('reviewer') == writing.get('reviewer'), 'writing reviewer mismatch')
-                except (ValueError, TypeError, OSError) as exc:
-                    errors.append(f'writing assessment: {exc}')
-            else:
-                check(bool(writing.get('limitations')), 'incomplete writing review requires limitations')
-                check(r.get('status') != 'completed', 'completed report has incomplete writing style review')
+    errors.extend(writing_review_errors(root, m, r, narrative,
+                                       require=r.get('schema_version') == CURRENT_REVIEW_SCHEMA and r.get('status') != 'failed'))
     return errors, narrative, count, coverage
 
 
@@ -488,6 +504,8 @@ def main():
         m = json.loads(local_file(root, 'manifest.json').read_text())
         r = json.loads(local_file(root, 'review.json').read_text())
         errors, narrative, count, coverage = validate(root, m, r)
+        if args.render and r.get('schema_version') != CURRENT_REVIEW_SCHEMA:
+            errors.append('rendering requires review schema_version 2 and a current writing review; preserve the legacy report and revise a copy')
         if not errors:
             report = render(m, r, narrative)
             queue_path = root / 'browser-checks.json'

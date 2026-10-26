@@ -144,6 +144,7 @@ class ContractTests(unittest.TestCase):
         self.assertEqual([], self.errors())
 
     def test_writing_snapshot_cli_is_local_nonapproving_and_preserves_prior_passes(self):
+        self.r['schema_version'] = 2
         for name, data in (('manifest.json', self.m), ('review.json', self.r)):
             (self.root / name).write_text(json.dumps(data))
         original_review = (self.root / 'review.json').read_bytes()
@@ -184,6 +185,8 @@ class ContractTests(unittest.TestCase):
         self.assertEqual(stem, v.report_stem(self.m))
         self.m['follow_up'] = {'updated_at': '2026-10-14T14:00:00+00:00'}
         self.assertNotEqual(stem, v.report_stem(self.m))
+        self.r['schema_version'] = 2
+        self.approve_writing_fixture()
         (self.root / 'manifest.json').write_text(json.dumps(self.m))
         (self.root / 'review.json').write_text(json.dumps(self.r))
         command = [sys.executable, str(SCRIPT), str(self.root)]
@@ -247,6 +250,8 @@ class ContractTests(unittest.TestCase):
         self.assertIn('unused-banner.png', report)
 
     def test_valid_render_and_consistency(self):
+        self.r['schema_version'] = 2
+        self.approve_writing_fixture()
         self.assertEqual([], self.errors())
         for filename, obj in [('manifest.json', self.m), ('review.json', self.r)]:
             (self.root / filename).write_text(json.dumps(obj))
@@ -421,6 +426,8 @@ class ContractTests(unittest.TestCase):
                 self.assertTrue(self.errors())
 
     def test_evidence_register_consistency_is_checked(self):
+        self.r['schema_version'] = 2
+        self.approve_writing_fixture()
         for filename, obj in [('manifest.json', self.m), ('review.json', self.r)]:
             (self.root / filename).write_text(json.dumps(obj))
         command = [sys.executable, str(SCRIPT), str(self.root)]
@@ -651,6 +658,41 @@ class ContractTests(unittest.TestCase):
     def test_rubric_ids_match_preserved_authority(self):
         self.assertEqual(v.IDS, {i for _, items in v.rubric() for i, _ in items})
         self.assertEqual(7, len(v.rubric()))
+
+    def test_current_schema_requires_style_record_and_legacy_cannot_render_new_feedback(self):
+        self.assertEqual([], self.errors())
+        for name,obj in (('manifest.json',self.m),('review.json',self.r)):
+            (self.root/name).write_text(json.dumps(obj))
+        command=[sys.executable,str(SCRIPT),str(self.root),'--render']
+        result=subprocess.run(command,capture_output=True,text=True)
+        self.assertNotEqual(0,result.returncode)
+        self.assertIn('rendering requires review schema_version 2',result.stdout)
+        self.assertFalse((self.root/'review.md').exists())
+        self.r['schema_version']=2
+        self.assertIn('current review requires writing_review metadata',self.errors())
+        self.approve_writing_fixture()
+        self.assertEqual([],self.errors())
+        (self.root/'review.json').write_text(json.dumps(self.r))
+        result=subprocess.run(command,capture_output=True,text=True)
+        self.assertEqual(0,result.returncode,result.stdout)
+        self.r.pop('writing_review')
+        (self.root/'review.json').write_text(json.dumps(self.r))
+        result=subprocess.run(command,capture_output=True,text=True)
+        self.assertNotEqual(0,result.returncode)
+        self.assertIn('current review requires writing_review metadata',result.stdout)
+
+    def test_snapshot_preparation_requires_a_current_usable_review(self):
+        for name,obj in (('manifest.json',self.m),('review.json',self.r)):
+            (self.root/name).write_text(json.dumps(obj))
+        command=[sys.executable,str(SCRIPT.with_name('prepare_writing_review.py')),str(self.root),'--out','writing-review/new']
+        result=subprocess.run(command,capture_output=True,text=True)
+        self.assertNotEqual(0,result.returncode)
+        self.assertFalse((self.root/'writing-review/new').exists())
+        self.r.update(schema_version=2,status='failed')
+        (self.root/'review.json').write_text(json.dumps(self.r))
+        result=subprocess.run(command,capture_output=True,text=True)
+        self.assertNotEqual(0,result.returncode)
+        self.assertIn('failed review has no usable narrative',result.stderr)
 
 
 if __name__ == '__main__':

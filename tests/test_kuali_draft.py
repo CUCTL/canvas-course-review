@@ -12,6 +12,9 @@ SCRIPT = Path(__file__).resolve().parents[1] / 'skills/canvas-course-review/scri
 spec = importlib.util.spec_from_file_location('kuali_draft', SCRIPT)
 k = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(k)
+validation_spec = importlib.util.spec_from_file_location('transfer_validation', SCRIPT.with_name('validate_review.py'))
+v = importlib.util.module_from_spec(validation_spec)
+validation_spec.loader.exec_module(v)
 
 
 class KualiTransferTests(unittest.TestCase):
@@ -37,6 +40,19 @@ class KualiTransferTests(unittest.TestCase):
 
     def prepare(self, **kwargs):
         return k.prepare(self.review, 'Design feedback <safe>.', self.response, 'COURSE 100', **kwargs)
+
+    def write_approved_cli_fixture(self, root, narrative):
+        """Synthetic style approval used only to exercise the CLI boundary."""
+        manifest={'course':{'id':'1','name':'Synthetic Course'},'limitations':[]}
+        self.review.update(schema_version=2,status='completed',limitations=[],grammar=[],narrative={'coverage':[]})
+        digest=v.writing_review_hash(v.writing_review_input(manifest,self.review,narrative))
+        report={'status':'passed','reviewer':'synthetic-style-reviewer','content_sha256':digest,'issues':[]}
+        (root/'assessment.json').write_text(json.dumps(report))
+        self.review['writing_review']={key:report[key] for key in ('status','reviewer','content_sha256')}
+        self.review['writing_review'].update(report='assessment.json',limitations=[])
+        for name,data in (('manifest.json',manifest),('review.json',self.review),('state.json',self.response)):
+            (root/name).write_text(json.dumps(data))
+        (root/'narrative.md').write_text(narrative)
 
     def test_actions_only_and_real_option_mapping(self):
         c = self.review['criteria'][0]
@@ -199,9 +215,7 @@ class KualiTransferTests(unittest.TestCase):
                      'Invite questions in the existing discussion.\n\nPlease let us know if you need help.')
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
-            (root / 'review.json').write_text(json.dumps(self.review))
-            (root / 'narrative.md').write_text(narrative)
-            (root / 'state.json').write_text(json.dumps(self.response))
+            self.write_approved_cli_fixture(root,narrative)
             out = root / 'transfer'
             command = [sys.executable, str(SCRIPT)]
             result = subprocess.run(command + ['prepare', str(root), '--state', str(root / 'state.json'),
@@ -223,6 +237,28 @@ class KualiTransferTests(unittest.TestCase):
             self.assertEqual(0, result.returncode, result.stderr)
             self.assertTrue(json.loads(result.stdout)['api_verified'])
             self.assertEqual(self.response['data']['document']['data'], plan['baseline'])
+
+    def test_cli_refuses_legacy_missing_or_stale_style_approval(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp)
+            self.write_approved_cli_fixture(root,'Saved faculty narrative.')
+            command=[sys.executable,str(SCRIPT),'prepare',str(root),'--state',str(root/'state.json'),
+                     '--course-code','COURSE 100','--out',str(root/'transfer')]
+            good=copy.deepcopy(self.review)
+            for mutation in ('legacy','missing','stale','unavailable','null','invalid'):
+                with self.subTest(mutation=mutation):
+                    changed=copy.deepcopy(good)
+                    if mutation=='legacy':changed['schema_version']=1
+                    elif mutation=='missing':changed.pop('writing_review')
+                    elif mutation=='stale':changed['criteria'][0]['action_plan']='New wording.'
+                    elif mutation=='unavailable':changed['writing_review']={'status':'unavailable','limitations':['Reviewer unavailable.']}
+                    elif mutation=='null':changed['writing_review']=None
+                    else:changed['writing_review']='invalid'
+                    (root/'review.json').write_text(json.dumps(changed))
+                    result=subprocess.run(command,capture_output=True,text=True)
+                    self.assertNotEqual(0,result.returncode)
+                    self.assertNotIn('Traceback',result.stderr)
+                    self.assertFalse((root/'transfer').exists())
 
 
 if __name__ == '__main__':

@@ -1,6 +1,6 @@
 # Review policy
 
-Version 1.8, October 26, 2026. Internal reviewer policy; not an amendment to official university guidance. CUOCDR v0.9 is the rating authority. The preserved rubric has 42 items numbered 1–24 and 26–43; do not add item 25. Preserve category order and criterion wording.
+Version 1.9, October 26, 2026. Internal reviewer policy; not an amendment to official university guidance. CUOCDR v0.9 is the rating authority. The preserved rubric has 42 items numbered 1–24 and 26–43; do not add item 25. Preserve category order and criterion wording.
 
 Use [internal review checks](internal-review-checks.md) to compare assessment instructions across locations and apply the designated CTL accessibility checklist with bounded verification. Master/blueprint and optional-training interpretations are internal operating rules; do not describe them as official university exceptions.
 
