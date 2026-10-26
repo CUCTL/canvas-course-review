@@ -29,7 +29,7 @@ Choose a review level:
 | 2 — API + browser (recommended) | Level 1 + browser verification where API/local evidence is insufficient |
 | 3 — API + browser + blind assessment | Level 2 + independent blind assessment, reconciliation, and policy audit |
 
-All levels retain the 42-item design rubric, grammar pass, narrative coverage checks, and report validation. Level 1 explicitly leaves browser-dependent conclusions unverified. Levels 1–2 do not include independent confirmation. The selected level appears in the report. See [review-level scope and selection](skills/canvas-course-review/references/review-levels.md).
+All levels retain the 42-item design rubric, grammar pass, narrative coverage checks, a separate writing style agent, and report validation. The style agent checks the narrative and action plans for general educators without instructional design training; evidence may remain technical. It does not count as the level-3 blind assessment. Level 1 explicitly leaves browser-dependent conclusions unverified. Levels 1–2 do not include independent blind course assessment. The selected level appears in the report. See [review-level scope and selection](skills/canvas-course-review/references/review-levels.md).
 
 Example request:
 
@@ -61,3 +61,5 @@ Scope is course design only, even for published/running courses. Interaction and
 Master/blueprint reviews count intentional instructor-completion scaffolds as Present, with explicit completion/publication reminders in the report. Unpublished status alone does not establish this exception; core content and accessibility requirements still apply. See [template placeholder guidance](skills/canvas-course-review/references/template-placeholders.md).
 
 When requested, the skill can also prepare, save and verify an unsubmitted Kuali CUOCDR draft. The local helper handles payload preparation and read-back checks; authenticated browser interaction handles saving. Existing human edits are preserved, and draft authorization does not include submission. See [the Kuali draft workflow](skills/canvas-course-review/references/kuali-draft.md).
+
+Before delivery, the separate [writing style reviewer](skills/canvas-course-review/references/writing-style-review.md) checks plain language, organization and preservation of meaning. Its assessment is saved locally and tied to the reviewed text; later changes require a fresh check. The main narrative remains within 600 words and includes at least three practical next-term teaching tips.

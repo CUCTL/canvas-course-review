@@ -44,7 +44,7 @@ Save the response as `state.json` inside the ignored review run. Require `status
 
 ## Prepare a reviewable transfer
 
-Validate the review first. Use its finalized `review.json` and faculty-facing `narrative.md`, including the unscored next-term teaching tips required by [the narrative guide](narrative-feedback-guidelines.md). Transfer that narrative without appending internal policy exceptions, audit history or judgments about past teaching.
+Validate the review and complete the [writing style agent check](writing-style-review.md) first. Recheck rewritten action or narrative text before transfer. Use its finalized `review.json` and faculty-facing `narrative.md`, including the unscored next-term teaching tips required by [the narrative guide](narrative-feedback-guidelines.md). Transfer that narrative without appending internal policy exceptions, audit history or judgments about past teaching.
 
 ```bash
 python3 <skill-path>/scripts/kuali_draft.py prepare <run-directory> \

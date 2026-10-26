@@ -54,6 +54,25 @@ def local_file(root, value):
     return resolved
 
 
+def writing_review_input(manifest, review, narrative):
+    """Freeze audience text and read-only factual context for the style reviewer."""
+    fields = ('id', 'rating', 'evidence_status', 'evidence', 'action_plan',
+              'verification_step', 'uncertainty', 'action_links', 'template_placeholder')
+    return {
+        'course': manifest['course'], 'status': review['status'],
+        'limitations': manifest['limitations'] + review['limitations'],
+        'narrative': narrative, 'narrative_coverage': review.get('narrative', {}).get('coverage', []),
+        'criteria': [{key: c[key] for key in fields if key in c}
+                     for c in sorted(review['criteria'], key=lambda c: c['id'])],
+        'grammar': review['grammar'],
+    }
+
+
+def writing_review_hash(content):
+    encoded = json.dumps(content, ensure_ascii=False, sort_keys=True, separators=(',', ':')).encode()
+    return hashlib.sha256(encoded).hexdigest()
+
+
 def rubric():
     groups, current = [], None
     for line in (Path(__file__).resolve().parents[1] / 'references/cuocdr-rubric.md').read_text().splitlines():
@@ -208,6 +227,12 @@ def render_evidence(manifest, review, checks=None):
             if excluded_source(c.get('file_source_id', c['id'])):
                 continue
             lines.append(f"- {c['id']}: {c['status']}; method: {c.get('verification_method', c.get('preferred_method', 'unspecified'))}; {c.get('verification_scope', c.get('scope_reason', c.get('reason', '')))} Sources: {', '.join(c.get('source_ids', []))}")
+    writing = review.get('writing_review')
+    if writing:
+        lines += ['', '## Writing style review', '', f"Status: {writing['status']}."]
+        if writing.get('report'):
+            lines.append(f"[Agent assessment]({writing['report']})")
+        lines += [f'- {limit}' for limit in writing.get('limitations', [])]
     return '\n'.join(lines) + '\n'
 
 
@@ -420,6 +445,33 @@ def validate(root, m, r):
               'at least three distinct teaching-tip excerpts must be present in the narrative')
         for key in ('strengths_excerpt', 'closing_excerpt'):
             check(nonempty(n.get(key)) and n[key] in narrative, f'{key} absent from narrative')
+    writing = r.get('writing_review')
+    if writing is not None:
+        if not isinstance(writing, dict):
+            errors.append('writing_review must be an object')
+        else:
+            status = writing.get('status')
+            check(status in {'pending', 'passed', 'needs_revision', 'unavailable'}, 'invalid writing review status')
+            check(isinstance(writing.get('limitations'), list)
+                  and all(nonempty(x) for x in writing.get('limitations', [])), 'invalid writing review limitations')
+            if status == 'passed':
+                check(nonempty(writing.get('reviewer')), 'writing review requires a separate reviewer')
+                current_hash = writing_review_hash(writing_review_input(m, r, narrative))
+                check(writing.get('content_sha256') == current_hash, 'writing review is stale; recheck the changed content')
+                try:
+                    assessment = json.loads(local_file(root, writing.get('report')).read_text())
+                    check(isinstance(assessment, dict), 'writing assessment must be an object')
+                    if isinstance(assessment, dict):
+                        check(assessment.get('status') == 'passed' and assessment.get('issues') == [],
+                              'writing assessment has not passed or has unresolved issues')
+                        check(assessment.get('content_sha256') == current_hash,
+                              'writing assessment does not cover the current content')
+                        check(assessment.get('reviewer') == writing.get('reviewer'), 'writing reviewer mismatch')
+                except (ValueError, TypeError, OSError) as exc:
+                    errors.append(f'writing assessment: {exc}')
+            else:
+                check(bool(writing.get('limitations')), 'incomplete writing review requires limitations')
+                check(r.get('status') != 'completed', 'completed report has incomplete writing style review')
     return errors, narrative, count, coverage
 
 

@@ -1,6 +1,6 @@
 # Independent blind confirmation
 
-Run this step for level 3 course-design reviews before delivering findings. Levels 1–2 do not require it; use the primary consistency check and report validation instead. Reuse saved API, document, and browser evidence; do not repeat browser verification by default. This is an independent policy/evidence assessment, not student grading or authority to change Canvas.
+Run this step for level 3 course-design reviews before delivering findings. Levels 1–2 do not require blind assessment; use the primary consistency check, the separate writing style agent and report validation. Reuse saved API, document, and browser evidence; do not repeat browser verification by default. This is an independent policy/evidence assessment, not student grading or authority to change Canvas.
 
 ## Phase 1: independent assessment
 
@@ -18,7 +18,7 @@ After freezing the independent assessment, expose the primary findings and artif
 
 Have the reviewer check the final structured findings, narrative, main report, and evidence register for consistency: exact IDs/wording, evidence sufficiency, severity, intentional template placeholders rated Present with reminders versus actual deficiencies, scope/status, contradictions, current versus superseded evidence, every Moderate/Major narrative mapping, concrete next steps, supportive tone, and compliance with [the narrative guide](narrative-feedback-guidelines.md), including at least three practical, unscored next-term teaching tips and the complete 600-word limit. Confirm that excluded files stay out of delivered listings and detailed provenance stays in the separate evidence register.
 
-If changes follow that audit, update all affected artifacts and run the validator again. Recheck only changed or disputed passages rather than repeating the full evidence/browser review. Save the policy audit and reconciliation record; name any unresolved judgments in the report. State that the initial assessment was blind and the comparison/audit followed it, rather than describing the comparison itself as blind.
+After this audit, run the separate [writing style agent](writing-style-review.md). If changes follow either check, update all affected artifacts and run the validator again. The primary reviewer checks that editorial changes preserve the reconciled findings and limits; reopen evidence/policy reconciliation only for a real meaning conflict. Recheck only changed or disputed passages rather than repeating the full evidence/browser review. Save the policy audit and reconciliation record; name any unresolved judgments in the report. State that the initial assessment was blind and the comparison/audit followed it, rather than describing the comparison itself as blind.
 
 If an independent agent is unavailable or blindness is contaminated and cannot be restored, disclose that confirmation is incomplete and keep delivery provisional. Do not claim blind confirmation merely because a second agent read the finished report.
 

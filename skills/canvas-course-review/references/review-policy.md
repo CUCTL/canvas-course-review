@@ -1,6 +1,6 @@
 # Review policy
 
-Version 1.7, October 20, 2026. Internal reviewer policy; not an amendment to official university guidance. CUOCDR v0.9 is the rating authority. The preserved rubric has 42 items numbered 1–24 and 26–43; do not add item 25. Preserve category order and criterion wording.
+Version 1.8, October 26, 2026. Internal reviewer policy; not an amendment to official university guidance. CUOCDR v0.9 is the rating authority. The preserved rubric has 42 items numbered 1–24 and 26–43; do not add item 25. Preserve category order and criterion wording.
 
 Use [internal review checks](internal-review-checks.md) to compare assessment instructions across locations and apply the designated CTL accessibility checklist with bounded verification. Master/blueprint and optional-training interpretations are internal operating rules; do not describe them as official university exceptions.
 
@@ -37,6 +37,8 @@ Apply the stopping and sampling rules in [internal review checks](internal-revie
 Recommend hiding navigation only when unused status is established or the instructor confirms it. Evaluate documented interaction and feedback design in every mode, including existing/published courses, without requiring messages, grades, or learner participation to have occurred. Keep Christian Perspective findings evidence-based and specific to the rubric.
 
 ## Presentation
+
+Write narrative feedback and action plans for general educators without instructional design training. Technical evidence and the preserved rubric may retain specialist wording. Use the separate [writing style agent](writing-style-review.md) at every level; it is distinct from blind course assessment. Keep its assessment internal and preserve factual meaning when applying edits.
 
 Text rating labels are authoritative; do not rely on color/icons. Review tables contain ID, criterion, rating, evidence, and action/verification. Show scope, snapshot, rubric version, source references, coverage limitations, deferred fields, priority actions, and mechanical grammar separately. Keep internal policy rules, exceptions, audit history and verification provenance out of the narrative; mention only limitations that materially affect a finding or next step. User verification/corrections can support findings when their source is recorded internally. Routine preparation reminders stay in detailed report sections unless tied to a confirmed design finding. Write the narrative after findings are finalized, then display it immediately after the course identity/date/mode/status and a separate report-level limitations note only when material, before the rubric tables. Put full scope/limitations and stage outcomes after the tables and grammar findings. Keep the detailed source register, mappings, file checklist and inventory in a separate evidence register linked from the main report; suggestions must not become new unsupported deficiencies.
 

@@ -60,6 +60,119 @@ class ContractTests(unittest.TestCase):
     def errors(self):
         return v.validate(self.root, self.m, self.r)[0]
 
+    def approve_writing_fixture(self):
+        """Synthetic approval record for contract tests, not a real agent review."""
+        digest = v.writing_review_hash(v.writing_review_input(
+            self.m, self.r, (self.root / 'narrative.md').read_text()))
+        path = self.root / 'writing-review' / 'assessment.json'
+        path.parent.mkdir(exist_ok=True)
+        assessment = {'status': 'passed', 'reviewer': 'synthetic-style-reviewer',
+                      'content_sha256': digest, 'issues': []}
+        path.write_text(json.dumps(assessment))
+        self.r['writing_review'] = {**assessment, 'report': 'writing-review/assessment.json', 'limitations': []}
+        self.r['writing_review'].pop('issues')
+        return path
+
+    def test_writing_review_is_separate_from_blind_course_assessment(self):
+        self.assertEqual([], self.errors())  # Historical records have no style approval claim.
+        for level in ('api_content', 'api_browser'):
+            self.r.update(review_level=level, level_selection='user_selected')
+            self.approve_writing_fixture()
+            self.assertEqual([], self.errors())
+            report = v.render(self.m, self.r, (self.root / 'narrative.md').read_text())
+            self.assertNotIn('Independent blind assessment completed', report)
+            self.assertNotIn('synthetic-style-reviewer', report)
+            self.assertIn('## Writing style review', v.render_evidence(self.m, self.r))
+        self.r['review_level'] = 'api_browser_blind'
+        self.assertIn('level 3 requires confirmation metadata', self.errors())
+
+    def test_changed_recommendations_or_context_invalidate_style_approval(self):
+        url = 'https://canvas.example.edu/courses/fixture/pages/media'
+        self.m['sources'][0]['location'] = url
+        self.m['course_type'] = 'master_blueprint'
+        criterion = next(c for c in self.r['criteria'] if c['id'] == 21)
+        criterion['action_links'] = [{'action': criterion['action_plan'], 'label': 'Media', 'url': url, 'source_id': 's1'}]
+        reminder = next(c for c in self.r['criteria'] if c['id'] == 30)
+        reminder['template_placeholder'] = {'scope': 'Instructor introduction', 'reminder': 'Add your introduction.'}
+        self.approve_writing_fixture()
+        self.assertEqual([], self.errors())
+        original = copy.deepcopy(self.r)
+        narrative = (self.root / 'narrative.md').read_text()
+        for field in ('narrative', 'action_plan', 'verification_step', 'uncertainty', 'evidence',
+                      'link_action', 'link_label', 'reminder', 'coverage'):
+            with self.subTest(field=field):
+                self.r = copy.deepcopy(original)
+                c = next(c for c in self.r['criteria'] if c['id'] == 21)
+                if field == 'narrative':
+                    (self.root / 'narrative.md').write_text(narrative + '\nA new next step.\n')
+                elif field.startswith('link_'):
+                    c['action_links'][0][field.removeprefix('link_')] += ' Updated.'
+                elif field == 'reminder':
+                    next(c for c in self.r['criteria'] if c['id'] == 30)['template_placeholder']['reminder'] += ' Before opening.'
+                elif field == 'coverage':
+                    self.r['narrative']['coverage'][0]['passage'] += ' Updated.'
+                else:
+                    c[field] += ' Updated.'
+                self.assertIn('writing review is stale; recheck the changed content', self.errors())
+                (self.root / 'narrative.md').write_text(narrative)
+
+    def test_writing_assessment_must_match_approval_and_have_no_open_issues(self):
+        path = self.approve_writing_fixture()
+        good = json.loads(path.read_text())
+        for changes in ({'status': 'needs_revision'}, {'issues': [{'location': 'action_plan'}]},
+                        {'reviewer': 'another-agent'}, {'content_sha256': '0' * 64}):
+            with self.subTest(changes=changes):
+                path.write_text(json.dumps({**good, **changes}))
+                self.assertTrue(self.errors())
+        path.write_text('[]')
+        self.assertIn('writing assessment must be an object', self.errors())
+        path.write_text(json.dumps(good))
+        self.r['writing_review']['report'] = '../outside.json'
+        self.assertTrue(self.errors())
+        self.r['writing_review']['report'] = 'writing-review/assessment.json'
+        self.assertEqual([], self.errors())
+
+    def test_unfinished_style_review_cannot_claim_a_completed_report(self):
+        for status in ('pending', 'needs_revision', 'unavailable'):
+            with self.subTest(status=status):
+                self.r['writing_review'] = {'status': status, 'limitations': ['Style check remains unfinished.']}
+                self.assertIn('completed report has incomplete writing style review', self.errors())
+        self.r['status'] = 'partial'
+        self.r['limitations'] = ['A separate style reviewer was unavailable.']
+        with (self.root / 'narrative.md').open('a') as handle:
+            handle.write('\nThis is a partial review.\n')
+        self.assertEqual([], self.errors())
+
+    def test_writing_snapshot_cli_is_local_nonapproving_and_preserves_prior_passes(self):
+        for name, data in (('manifest.json', self.m), ('review.json', self.r)):
+            (self.root / name).write_text(json.dumps(data))
+        original_review = (self.root / 'review.json').read_bytes()
+        command = [sys.executable, str(SCRIPT.with_name('prepare_writing_review.py')), str(self.root)]
+        result = subprocess.run(command + ['--out', 'writing-review/pass-01'], capture_output=True, text=True)
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertFalse(json.loads(result.stdout)['approval_generated'])
+        path = self.root / 'writing-review/pass-01/input.json'
+        frozen = path.read_bytes()
+        snapshot = json.loads(frozen)
+        self.assertEqual(v.writing_review_hash(snapshot['content']), snapshot['content_sha256'])
+        self.assertEqual((self.root / 'narrative.md').read_text(), snapshot['content']['narrative'])
+        self.assertEqual(original_review, (self.root / 'review.json').read_bytes())
+        self.assertFalse((path.parent / 'assessment.json').exists())
+        result = subprocess.run(command + ['--out', 'writing-review/pass-01'], capture_output=True, text=True)
+        self.assertNotEqual(0, result.returncode)
+        self.assertEqual(frozen, path.read_bytes())
+        result = subprocess.run(command + ['--out', '../outside'], capture_output=True, text=True)
+        self.assertNotEqual(0, result.returncode)
+
+    def test_technical_evidence_survives_writing_review_unchanged(self):
+        c = next(c for c in self.r['criteria'] if c['id'] == 21)
+        c['evidence'] = 'DOM inspection: aria-describedby="chart-description"; measured contrast 5.52:1.'
+        self.approve_writing_fixture()
+        self.assertEqual([], self.errors())
+        report = v.render(self.m, self.r, (self.root / 'narrative.md').read_text())
+        self.assertIn(c['evidence'], report)
+        self.assertIn(c['evidence'], v.render_evidence(self.m, self.r))
+
     def test_named_report_is_safe_stable_and_matches_canonical_output(self):
         self.m['course'] = {'id': '28805', 'name': 'A different course title',
                             'course_code': 'MASTER_BTHT_3023_ONL / Section A'}
