@@ -83,10 +83,15 @@ def narrative_html(text):
 
 
 def action_text(criterion):
-    """Transfer tasks and destinations, including legacy links and pending checks."""
+    """Transfer tasks and destinations, or the explanation for an N/A rating."""
     rating = criterion['rating']
-    if rating in ('Present', 'N/A'):
+    if rating == 'Present':
         return ''
+    if rating == 'N/A':
+        reason = criterion.get('na_reason', criterion.get('evidence', ''))
+        if not isinstance(reason, str) or not reason.strip():
+            raise ValueError(f'CU {criterion["id"]} N/A requires an explanation for the action field')
+        return reason.strip()
     links = criterion.get('action_links', [])
     paired = any('action' in link for link in links)
     tasks, actions = [], []

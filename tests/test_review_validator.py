@@ -634,6 +634,36 @@ class ContractTests(unittest.TestCase):
         (self.root / 'narrative.md').write_text('Subject: Fixture Course\n' + 'word ' * 601)
         self.assertTrue(self.errors())
 
+    def test_na_explanation_appears_in_actions_column(self):
+        criterion = next(c for c in self.r['criteria'] if c['id'] == 17)
+        criterion.update(rating='N/A', evidence_status='not_applicable',
+                         evidence='The inspected course contains no authored data tables.')
+        for reason in (None, 'This course has no instructional tables to assess.'):
+            with self.subTest(reason=reason):
+                if reason is not None:
+                    criterion['na_reason'] = reason
+                self.assertEqual([], self.errors())
+                report = v.render(self.m, self.r, (self.root / 'narrative.md').read_text())
+                row = next(line for line in report.splitlines() if line.startswith('| 17 |'))
+                self.assertEqual(reason or criterion['evidence'], row.split('|')[-2].strip())
+
+    def test_na_explanation_is_validated_and_covered_by_writing_approval(self):
+        criterion = next(c for c in self.r['criteria'] if c['id'] == 17)
+        criterion.update(rating='N/A', evidence_status='not_applicable',
+                         evidence='No authored data tables were found.',
+                         na_reason='This course has no instructional tables to assess.')
+        self.approve_writing_fixture()
+        self.assertEqual([], self.errors())
+        criterion['na_reason'] = 'There are no course data tables to review.'
+        self.assertIn('writing review is stale; recheck the changed content', self.errors())
+        self.r.pop('writing_review')
+        for invalid in ('', ' ', None, 17):
+            with self.subTest(invalid=invalid):
+                criterion['na_reason'] = invalid
+                self.assertIn('CU 17: N/A requires an explanation for the actions column', self.errors())
+        criterion.update(rating='Present', evidence_status='verified', na_reason='Not applicable.')
+        self.assertIn('CU 17: na_reason requires an N/A rating and a nonempty explanation', self.errors())
+
     def test_source_integrity_and_path_boundary(self):
         (self.root / 'source.html').write_text('changed')
         self.assertTrue(self.errors())

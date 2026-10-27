@@ -57,12 +57,14 @@ class KualiTransferTests(unittest.TestCase):
     def test_actions_only_and_real_option_mapping(self):
         c = self.review['criteria'][0]
         c.update(rating='Minor Revision', action_links=[{'action': 'Revise directions.', 'url': 'https://example.test/task'}])
-        self.review['criteria'][1]['rating'] = 'N/A'
+        self.review['criteria'][1].update(rating='N/A',
+            na_reason='This optional training has no graded assignments.')
         self.review['criteria'][2].update(rating=None, verification_step='Check the caption accuracy.')
         plan = self.prepare()
         self.assertEqual(plan['payload']['r1'], {'id': 'm', 'label': 'Minor Revision'})
         self.assertEqual(plan['payload']['a1'], 'Revise directions.\nhttps://example.test/task')
         self.assertEqual(plan['payload']['r2']['label'], 'NA')
+        self.assertEqual(plan['payload']['a2'], 'This optional training has no graded assignments.')
         self.assertNotIn('r3', plan['desired'])
         self.assertNotIn('course', plan['payload'])
         self.assertNotIn('NOT AN ACTION', str(plan['payload']))
@@ -176,7 +178,6 @@ class KualiTransferTests(unittest.TestCase):
 
     def test_existing_empty_actions_may_be_omitted_or_null(self):
         self.response['data']['document']['data'].update(a1='', a2='')
-        self.review['criteria'][1]['rating'] = 'N/A'
         plan = self.prepare()
         for empty_value in ('omitted', None, ''):
             with self.subTest(empty_value=empty_value):
@@ -189,6 +190,35 @@ class KualiTransferTests(unittest.TestCase):
                 else:
                     data.update(a1=empty_value, a2=empty_value)
                 self.assertTrue(k.verify(plan, readback)['api_verified'])
+
+    def test_na_explanation_supports_legacy_records_and_rejects_missing_comments(self):
+        criterion = self.review['criteria'][1]
+        criterion.update(rating='N/A', evidence='No authored data tables are used in this course.')
+        self.assertEqual(criterion['evidence'], self.prepare()['payload']['a2'])
+        criterion['evidence'] = ''
+        with self.assertRaisesRegex(ValueError, 'N/A requires an explanation'):
+            self.prepare()
+        criterion['evidence'] = 'Legacy explanation.'
+        for invalid in ('', None, 17):
+            with self.subTest(invalid=invalid):
+                criterion['na_reason'] = invalid
+                with self.assertRaisesRegex(ValueError, 'N/A requires an explanation'):
+                    self.prepare()
+
+    def test_na_comments_cannot_be_normalized_to_empty_on_readback(self):
+        self.review['criteria'][1].update(rating='N/A',
+            na_reason='This optional training has no graded assignments.')
+        plan = self.prepare()
+        for value in ('kept', 'omitted', None, ''):
+            with self.subTest(value=value):
+                readback = copy.deepcopy(self.response)
+                data = readback['data']['document']['data']
+                data.update(plan['payload'])
+                if value == 'omitted':
+                    data.pop('a2')
+                elif value != 'kept':
+                    data['a2'] = value
+                self.assertEqual(value == 'kept', k.verify(plan, readback)['api_verified'])
 
     def test_empty_normalization_does_not_hide_lost_tasks_or_unrelated_changes(self):
         self.review['criteria'][0].update(rating='Minor Revision', action_plan='Revise the prompt.')

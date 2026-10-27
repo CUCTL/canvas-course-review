@@ -57,7 +57,7 @@ def local_file(root, value):
 
 def writing_review_input(manifest, review, narrative):
     """Freeze audience text and read-only factual context for the style reviewer."""
-    fields = ('id', 'rating', 'evidence_status', 'evidence', 'action_plan',
+    fields = ('id', 'rating', 'evidence_status', 'evidence', 'na_reason', 'action_plan',
               'verification_step', 'uncertainty', 'action_links', 'template_placeholder')
     return {
         'course': manifest['course'], 'status': review['status'],
@@ -201,6 +201,12 @@ def render(manifest, review, narrative):
                 action = paired + (f" Uncertainty: {c['uncertainty']}" if c['uncertainty'] else '')
             elif related:
                 action += f'\nRelated locations: {related}'
+            if c['rating'] == 'N/A':
+                # Historical records keep their rationale in evidence.
+                reason = c.get('na_reason', c['evidence']).strip()
+                action = reason + (f" Uncertainty: {c['uncertainty']}" if c['uncertainty'] else '')
+                if related:
+                    action += f'\nRelated locations: {related}'
             placeholder = c.get('template_placeholder')
             if placeholder:
                 action += f'\nInstructor preparation reminder: {placeholder["reminder"]}'
@@ -439,7 +445,12 @@ def validate(root, m, r):
             check(state == 'verified', prefix + 'Present requires verified evidence')
         elif rating == 'N/A':
             check(state == 'not_applicable', prefix + 'N/A requires not_applicable')
-        elif rating is None:
+            check(nonempty(c.get('na_reason', c.get('evidence'))),
+                  prefix + 'N/A requires an explanation for the actions column')
+        if 'na_reason' in c:
+            check(rating == 'N/A' and nonempty(c['na_reason']),
+                  prefix + 'na_reason requires an N/A rating and a nonempty explanation')
+        if rating is None:
             check(state == 'not_verified' and nonempty(c.get('verification_step')) and nonempty(c.get('uncertainty')), prefix + 'pending needs verification and uncertainty')
         if c.get('deferred'):
             check(rating is None, prefix + 'deferred cannot be rated')
