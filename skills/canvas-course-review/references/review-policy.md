@@ -1,6 +1,6 @@
 # Review policy
 
-Version 1.12, October 27, 2026. Internal reviewer policy; not an amendment to official university guidance. CUOCDR v0.9 is the rating authority. The preserved rubric has 42 items numbered 1–24 and 26–43; do not add item 25. Preserve category order and criterion wording.
+Version 1.13, October 27, 2026. Internal reviewer policy; not an amendment to official university guidance. CUOCDR v0.9 is the rating authority. The preserved rubric has 42 items numbered 1–24 and 26–43; do not add item 25. Preserve category order and criterion wording.
 
 Use [internal review checks](internal-review-checks.md) to compare assessment instructions across locations and apply the designated CTL accessibility checklist with bounded verification. Master/blueprint and optional-training interpretations are internal operating rules; do not describe them as official university exceptions.
 
@@ -59,3 +59,8 @@ Offer three levels when the user has not selected one: API content + narrative (
 Review planned and authored course design, not course delivery. Interaction criteria concern documented expectations, planned substantive contact, communication guidance, and opportunities designed into the course. Feedback criteria concern stated policies, assessment criteria, self-review opportunities, and designed feedback mechanisms. Do not evaluate actual instructor responsiveness, feedback execution/quality, student engagement/achievement, attendance, or actual accommodation implementation. Do not turn empty activity histories, unavailable real-learner sessions, or absent posted grades into design deficiencies.
 
 Configured dates, navigation/visibility, media playback, document accessibility, quiz instructions and preview controls may be checked as design evidence. Actual enrolled-learner testing and delivery outcomes are outside this skill; their absence is a scope boundary, not unfinished design review. Missing documented design intent can remain pending, with a request to clarify the plan. In master/blueprint templates, treat intentional instructor personalization scaffolds as Present with completion reminders, as described above. Include at least three practical next-term teaching tips in the narrative as unscored suggestions grounded in the reviewed design. They do not establish delivery deficiencies or change ratings. Follow [the narrative guide](narrative-feedback-guidelines.md) for their wording, placement and word limit.
+
+
+## Delivery choices
+
+End each review by offering a PDF download, Kuali submission, and report upload plus a channel message to CTL → Online Course Review. Follow [end-of-review delivery](review-delivery.md); user selection is required before submission or posting unless already authorized for that report. A draft request still ends before submission. Attribute the channel message to Codex using this skill, or to the posting name the user supplied. Verify the actual file, message and Kuali status separately and retain local receipts. Review ratings and writing approval remain independent of delivery status.

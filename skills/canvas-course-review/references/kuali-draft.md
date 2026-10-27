@@ -1,6 +1,6 @@
 # Kuali CUOCDR draft transfer
 
-Use this workflow only when the user asks to start, populate or update a Kuali review draft. A course review alone does not authorize writing to Kuali. An authorized draft request includes saving an unsubmitted draft and verifying it; do not ask again for those steps. Stop before Submit or any workflow-routing operation. Packaging this skill does not authorize a live test write.
+Use these draft steps when the user asks to start, populate or update a Kuali review draft, or selects Kuali submission for a finalized review. A course review alone does not authorize writing to Kuali. An authorized draft request includes saving an unsubmitted draft and verifying it; do not ask again for those steps. Under draft-only authorization, stop before Submit or any workflow-routing operation. Submission selection authorizes the separate [submission steps](#submit-when-requested) after preparation and verification. Packaging this skill does not authorize a live test write.
 
 ## Destination and authentication
 
@@ -14,7 +14,7 @@ Use the user's authenticated browser through its supported automation tools. Fol
 
 Assume the form schema and tested operation signatures are stable. Reuse the bundled `assets/kuali-cuocdr-form.json`; do not introspect or retrieve the form schema on every run. Confirm draft identity/course/status through a normal data read. Refresh the schema only after a schema-related failure (unknown field/type/option, unmappable form key, explicit version mismatch, or a recognized target field failing to persist). A schema check alone does not prove draft saving.
 
-For other GraphQL errors, switch to the Kuali form UI to complete the authorized draft edit and Save. This includes mutation-permission or non-schema server errors; do not repeatedly probe alternate mutations. For authentication errors, restore normal sign-in first, then use the form UI. Before retrying an ambiguous failed write, inspect current saved data/UI to avoid overwriting edits or creating duplicates. Browser fallback has the same draft-only boundary and requires a reload check; if browser save also fails, report the concrete blocker.
+For other GraphQL errors, switch to the Kuali form UI to complete the authorized draft edit and Save. This includes mutation-permission or non-schema server errors; do not repeatedly probe alternate mutations. For authentication errors, restore normal sign-in first, then use the form UI. Before retrying an ambiguous failed write, inspect current saved data/UI to avoid overwriting edits or creating duplicates. Browser fallback has the same authorization boundary and requires a reload check; if browser save also fails, report the concrete blocker.
 
 ## Resolve the exact draft
 
@@ -83,10 +83,23 @@ python3 <skill-path>/scripts/kuali_draft.py verify \
 
 The verifier checks draft/document identity, expected values, intentionally blank ratings, and unexpected changes outside the payload. It checks form version only when the read-back supplies one; it does not request schema metadata routinely. On failure, inspect the mismatch; do not overwrite concurrent user edits or claim completion. For a reviewed narrow payload, compare its target fields and all non-target fields against the fresh baseline separately.
 
-Reload the form and check the selected course, changed ratings/action fields and narrative, plus the DRAFT badge. Confirm that nulls remain blank, N/A explanations are retained in their Action Plan fields, and fields hidden for Present are absent/empty as expected. If the form hides an N/A comment, record that visibility limitation and retain the explanation in the report rather than claiming it is displayed. Do not click Submit. Save a screenshot showing the requested result, keep the draft tab as a deliverable when supported, and give the draft link. Distinguish API verification from browser verification and submission.
+Reload the form and check the selected course, changed ratings/action fields and narrative, plus the DRAFT badge. Confirm that nulls remain blank, N/A explanations are retained in their Action Plan fields, and fields hidden for Present are absent/empty as expected. If the form hides an N/A comment, record that visibility limitation and retain the explanation in the report rather than claiming it is displayed. Under draft-only authorization, do not click Submit. Save a screenshot showing the requested result, keep the draft tab as a deliverable when supported, and give the draft link. Distinguish API verification from browser verification and submission.
 
 On schema failure, fetch the target document’s `form { id template schema { formKey label } }` once, save the returned form object as a replacement schema cache, remap and inspect the new plan. Use that document’s form version rather than an unrelated designer version. Update the bundled cache only after verification; keep it limited to form IDs, labels, keys and rating options, without documents, selections, user data or credentials. If schema refresh does not resolve the problem, use the form UI.
 
 If the user asks specifically to test saving before full population, write a harmless temporary note to the correct narrative field in the authorized draft, independently read it, reload to confirm, then restore the baseline and verify restoration. Record test success separately from full transfer success. A prior successful test does not guarantee a new app/version's write behavior.
 
 Keep baseline, mapping, payload, response, independent read-back and verification artifacts in the ignored run directory. Record hashes in the manifest when retaining them as review evidence. Never store authentication material. The helper has no submit, delete, routing, network or credential capability.
+
+
+## Submit when requested
+
+Offer submission at the end of each review as described in [end-of-review delivery](review-delivery.md). A saved draft or a request to fill the form does not authorize submission. An explicit request or selected submission option for the identified report does; do not ask for the same authorization again after the content is concrete and reviewable.
+
+1. Finish the draft workflow above first. Confirm the exact course and draft, all 42 ratings, N/A comments, action text, narrative and any human edits. Complete the current writing check and report validation. Keep the verified draft and final report available to the user. Disclose partial-review limits or unresolved required fields; do not invent values or change findings to satisfy form validation.
+2. If submission authorization is missing or the content/destination materially changed since authorization, ask about the concrete final draft before proceeding. Do not interpret selecting PDF or Teams delivery as permission to submit Kuali.
+3. Use the authenticated form’s supported Submit control and handle any final confirmation within the authorized submission. Do not guess a submission mutation or extend the local draft helper to route a workflow. If required information is missing, resolve that field rather than fabricating it or submitting another draft.
+4. Verify the resulting receipt or workflow/document state through a fresh read and/or form reload. Record the actual returned status and submission receipt/link; do not assume a particular status spelling. The draft helper verifies saved drafts and is not proof of submission.
+5. If the operation times out or the outcome is unclear, inspect the form/document before retrying. Do not submit twice or create a second form. Report a verified submission separately from draft saving and retain the receipt in the ignored review run.
+
+Return the verified form/receipt link. Continue any separately selected PDF or Teams delivery with the actual Kuali status; do not claim submission in a Teams message until it has been confirmed.
